@@ -49,4 +49,9 @@ services:
       - "80:8088"
     volumes:
       - ./sentry-notifier.yaml:/app/sentry-notifier.yaml
+    environment:
+      - SENTRY_NOTIFIER_SENTRY_CLIENT_SECRET=<your sentry client secret>
+      - SENTRY_NOTIFIER_TELEGRAM_CHAT_ID=<your telegram chat id>
+      - SENTRY_NOTIFIER_TELEGRAM_CHAT_THREAD_ID=<your telegram chat thread id>
+      - SENTRY_NOTIFIER_TELEGRAM_BOT_TOKEN=<your telegram bot token>
 ```
