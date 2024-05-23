@@ -20,6 +20,7 @@ type EventAlert struct {
 			Project  int    `json:"project"`
 			URL      string `json:"url"`
 			Datetime Time   `json:"datetime"`
+			WebURL   string `json:"web_url"`
 		} `json:"event"`
 		Extracted struct {
 			ProjectName      string `json:"-"`
