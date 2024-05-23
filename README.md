@@ -35,7 +35,7 @@ notify:
           ```
           {{ hook.Event.Title }}```
           
-          {{ hook.Event.URL }}
+          {{ hook.Event.IssueURL }}
         to: my_team
 ```
 
