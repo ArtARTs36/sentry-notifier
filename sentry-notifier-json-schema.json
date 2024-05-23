@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "http": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "address"
+      ]
+    },
+    "log": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": [
+            "info",
+            "warning",
+            "error",
+            "debug"
+          ]
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "client_secret": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "client_secret"
+      ]
+    },
+    "channels": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/channel"
+      }
+    },
+    "notify": {
+      "type": "object",
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": [
+            "immediately",
+            "async"
+          ],
+          "default": "immediately"
+        },
+        "on": {
+          "type": "object",
+          "properties": {
+            "event_alert": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Template for message in Twig syntax"
+                    },
+                    "to": {
+                      "type": "string",
+                      "description": "Channel name from channels section"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "to"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "required": [
+        "on"
+      ]
+    }
+  },
+  "required": [
+    "http",
+    "channels",
+    "notify"
+  ],
+  "definitions": {
+    "channel": {
+      "type": "object",
+      "properties": {
+        "telegram": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "chat_id": {
+                  "type": "string"
+                },
+                "thread_id": {
+                  "type": "string"
+                },
+                "bot_token": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "chat_id",
+                "thread_id",
+                "bot_token"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

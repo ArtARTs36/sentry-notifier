@@ -1,0 +1,131 @@
+package notifier
+
+import (
+	"context"
+	"fmt"
+	"github.com/artarts36/sentry-notifier/internal/messenger"
+	"github.com/artarts36/sentry-notifier/internal/sentry"
+	"github.com/artarts36/sentry-notifier/internal/template"
+	"github.com/tyler-sommer/stick"
+	"log/slog"
+	"sync"
+)
+
+type ImmediatelyNotifier struct {
+	messengers map[string][]messenger.Messenger
+	renderer   *template.Renderer
+	cfg        Config
+}
+
+type Template struct {
+	Message string `yaml:"message"`
+	To      string `yaml:"to"`
+
+	MessageTemplateID string `yaml:"-"`
+}
+
+type messengersMessage struct {
+	messengers []messenger.Messenger
+	message    string
+}
+
+func NewImmediatelyNotifier(
+	messengers map[string][]messenger.Messenger,
+	renderer *template.Renderer,
+	cfg Config,
+) *ImmediatelyNotifier {
+	return &ImmediatelyNotifier{
+		messengers: messengers,
+		renderer:   renderer,
+		cfg:        cfg,
+	}
+}
+
+func (n *ImmediatelyNotifier) Notify(ctx context.Context, payload sentry.Payload) error {
+	templates, err := n.selectTemplates(payload)
+	if err != nil {
+		return fmt.Errorf("notifier: failed to select templates: %w", err)
+	}
+
+	slog.DebugContext(ctx, fmt.Sprintf("[notifier] selected %d templates", len(templates)))
+
+	messengersMessages := make([]messengersMessage, 0)
+	wg := &sync.WaitGroup{}
+
+	allMessagesCount := 0
+
+	for _, tmpl := range templates {
+		msgs, lErr := n.selectMessengers(tmpl.To)
+		if lErr != nil {
+			return fmt.Errorf("notifier: failed to select messengersMessages: %w", lErr)
+		}
+
+		message, lErr := n.renderer.Render(tmpl.MessageTemplateID, map[string]stick.Value{
+			"hook": payload.GetData(),
+		})
+		if lErr != nil {
+			return fmt.Errorf("notifier: failed to render message: %w", lErr)
+		}
+
+		messengersMessages = append(messengersMessages, messengersMessage{
+			messengers: msgs,
+			message:    string(message),
+		})
+
+		allMessagesCount += len(msgs)
+	}
+
+	slog.InfoContext(ctx, fmt.Sprintf("[notifier] sending %d messages", allMessagesCount))
+
+	for _, tmpl := range messengersMessages {
+		tmpl := tmpl
+
+		for _, mess := range tmpl.messengers {
+			wg.Add(1)
+
+			mess := mess
+			go func() {
+				defer wg.Done()
+
+				slog.InfoContext(ctx, fmt.Sprintf("[notifier] sending message via %s", mess.Name()))
+
+				err = mess.Send(ctx, messenger.Message{
+					Body: tmpl.message,
+				})
+				if err != nil {
+					slog.
+						With(slog.String("messenger", mess.Name())).
+						With(slog.String("err", err.Error())).
+						WarnContext(ctx, "failed to send message")
+				}
+			}()
+		}
+	}
+
+	wg.Wait()
+
+	return nil
+}
+
+func (n *ImmediatelyNotifier) selectMessengers(channelName string) ([]messenger.Messenger, error) {
+	msgs, exists := n.messengers[channelName]
+	if !exists {
+		return nil, fmt.Errorf("notifier: failed to find messengers for channel %s", channelName)
+	}
+
+	return msgs, nil
+}
+
+func (n *ImmediatelyNotifier) selectTemplates(payload sentry.Payload) ([]Template, error) {
+	res := payload.GetHookResource()
+
+	msgs, exists := n.cfg.On[res]
+	if !exists {
+		return nil, fmt.Errorf("hook resource %q unsupported", res)
+	}
+
+	return msgs, nil
+}
+
+func (*ImmediatelyNotifier) Close() {
+}
