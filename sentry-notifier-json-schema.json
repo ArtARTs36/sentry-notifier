@@ -60,25 +60,15 @@
           "properties": {
             "event_alert": {
               "type": "array",
-              "items": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Template for message in Twig syntax"
-                    },
-                    "to": {
-                      "type": "string",
-                      "description": "Channel name from channels section"
-                    }
-                  },
-                  "required": [
-                    "message",
-                    "to"
-                  ]
-                }
-              ]
+              "items": {
+                "$ref": "#/definitions/trigger"
+              }
+            },
+            "issue": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/trigger"
+              }
             }
           }
         }
@@ -122,6 +112,23 @@
           ]
         }
       }
+    },
+    "trigger": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "Template for message in Twig syntax"
+        },
+        "to": {
+          "type": "string",
+          "description": "Channel name from channels section"
+        }
+      },
+      "required": [
+        "message",
+        "to"
+      ]
     }
   }
 }

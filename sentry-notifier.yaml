@@ -25,3 +25,15 @@ notify:
           
           {{ hook.Event.IssueURL }}
         to: my_team
+
+    issue:
+      - message: |
+          🚨 Error on {{ hook.Issue.Project.Name }}
+          
+          at {{ hook.Issue.LastSeen.Human() }}
+
+          ```
+          {{ hook.Issue.Title }}```
+          
+          https://<your-org-name>.sentry.io/issues/{{ hook.Issue.ID }}/
+        to: my_team

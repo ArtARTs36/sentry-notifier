@@ -23,8 +23,12 @@ func NewAsyncNotifier(notifier Notifier) *AsyncNotifier {
 	}
 }
 
-func (n *AsyncNotifier) Notify(_ context.Context, payload sentry.Payload) error {
+func (n *AsyncNotifier) Notify(ctx context.Context, payload sentry.Payload) error {
 	n.run()
+
+	slog.
+		With(slog.Any("payload", payload)).
+		DebugContext(ctx, "[async-notifier] push payload to queue")
 
 	n.queue <- payload
 
@@ -50,20 +54,23 @@ func (n *AsyncNotifier) run() {
 func (n *AsyncNotifier) notify() {
 	const timeout = time.Second * 10
 
-	select { //nolint: gosimple // not need
-	case pl := <-n.queue:
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		defer cancel()
+	for { //nolint: gosimple // not need
+		select {
+		case pl := <-n.queue:
+			ctx, cancel := context.WithTimeout(context.Background(), timeout)
 
-		slog.
-			With(slog.Any("payload", pl)).
-			DebugContext(ctx, "[async-notifier] processing payload")
-
-		err := n.notifier.Notify(ctx, pl)
-		if err != nil {
 			slog.
-				With(slog.String("err", err.Error())).
-				ErrorContext(ctx, "[async-notifier] failed to notify")
+				With(slog.Any("payload", pl)).
+				DebugContext(ctx, "[async-notifier] processing payload")
+
+			err := n.notifier.Notify(ctx, pl)
+			if err != nil {
+				slog.
+					With(slog.String("err", err.Error())).
+					ErrorContext(ctx, "[async-notifier] failed to notify")
+			}
+
+			cancel()
 		}
 	}
 }

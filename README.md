@@ -14,14 +14,14 @@ http:
   address: :8088
 
 security:
-  client_secret: '$SENTRY_CLIENT_SECRET'
+  client_secret: '$SENTRY_NOTIFIER_SENTRY_CLIENT_SECRET'
 
 channels:
   my_team:
     telegram:
-      - chat_id: '$TELEGRAM_CHAT_ID'
-        thread_id: '$TELEGRAM_CHAT_THREAD_ID'
-        bot_token: '$TELEGRAM_BOT_TOKEN'
+      - chat_id: '$SENTRY_NOTIFIER_TELEGRAM_CHAT_ID'
+        thread_id: '$SENTRY_NOTIFIER_TELEGRAM_CHAT_THREAD_ID'
+        bot_token: '$SENTRY_NOTIFIER_TELEGRAM_BOT_TOKEN'
 
 notify:
   strategy: async
@@ -29,13 +29,25 @@ notify:
     event_alert:
       - message: |
           🚨 Error on {{ hook.Extracted.OrganizationName }}/{{ hook.Extracted.ProjectName }}
-          
+
           at {{ hook.Event.Datetime.Human() }}
 
           ```
           {{ hook.Event.Title }}```
-          
-          {{ hook.Event.WebURL }}
+
+          {{ hook.Event.IssueURL }}
+        to: my_team
+
+    issue:
+      - message: |
+          🚨 Error on {{ hook.Issue.Project.Name }}
+
+          at {{ hook.Issue.LastSeen.Human() }}
+
+          ```
+          {{ hook.Issue.Title }}```
+
+          https://<your-org-name>.sentry.io/issues/{{ hook.Issue.ID }}/
         to: my_team
 ```
 

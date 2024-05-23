@@ -10,9 +10,11 @@ type Payload interface {
 }
 
 func ParsePayload(resource HookResource, pl []byte) (Payload, error) {
-	switch resource { //nolint: gocritic // cases will be append
+	switch resource { 
 	case HookResourceEventAlert:
 		return createEventAlertFromJSON(pl)
+	case HookResourceIssue:
+		return createIssuePayload(pl)
 	}
 
 	return nil, fmt.Errorf("unknown resource: %s", resource)
