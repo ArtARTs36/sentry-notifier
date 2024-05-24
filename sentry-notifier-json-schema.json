@@ -51,7 +51,8 @@
           "type": "string",
           "enum": [
             "immediately",
-            "async"
+            "async",
+            "null"
           ],
           "default": "immediately"
         },
