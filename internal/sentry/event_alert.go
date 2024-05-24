@@ -12,20 +12,21 @@ type EventAlert struct {
 	Action string `json:"action"`
 	Data   struct {
 		Event struct {
-			IssueURL string `json:"issue_url"`
-			IssueID  string `json:"issue_id"`
-			Platform string `json:"platform"`
-			Title    string `json:"title"`
-			Type     string `json:"type"`
-			Project  int    `json:"project"`
-			URL      string `json:"url"`
-			Datetime Time   `json:"datetime"`
-			WebURL   string `json:"web_url"`
+			IssueURL    string   `json:"issue_url"`
+			IssueID     string   `json:"issue_id"`
+			Platform    string   `json:"platform"`
+			Title       string   `json:"title"`
+			Type        string   `json:"type"`
+			Project     int      `json:"project"`
+			URL         string   `json:"url"`
+			Datetime    Time     `json:"datetime"`
+			WebURL      string   `json:"web_url"`
+			Fingerprint []string `json:"fingerprint"`
+			Request     struct {
+				Method string `json:"method"`
+				URL    string `json:"url"`
+			} `json:"request"`
 		} `json:"event"`
-		Request struct {
-			Method string `json:"method"`
-			URL    string `json:"url"`
-		} `json:"request"`
 		Extracted struct {
 			ProjectName      string `json:"-"`
 			OrganizationName string `json:"-"`

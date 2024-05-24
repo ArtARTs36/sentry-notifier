@@ -74,22 +74,23 @@ services:
 
 **event_alert**
 
-| Variable                    | Type    | Description                                              |
-|-----------------------------|---------|----------------------------------------------------------|
-| hook.Event.IssueURL         | string  | The API URL for the associated issue                     |
-| hook.Event.IssueID          | string  | The id of the issue                                      |
-| hook.Event.Platform         | string  |                                                          |
-| hook.Event.Title            | string  | The label of the rule that was triggered                 |
-| hook.Event.Type             | string  |                                                          |
-| hook.Event.Project          | integer |                                                          |
-| hook.Event.URL              | string  |                                                          |
-| hook.Event.Datetime         | time    |                                                          |
-| hook.Event.Datetime.Human() | string  | Format time to `Y-m-d H:i:s`                             |
-| hook.Event.URL              | string  | The API URL for the event                                |
-| hook.Request.Method         | string  |                                                          |
-| hook.Request.URL            | string  |                                                          |
-| hook.Extracted.ProjectName  | string  | Name of your project, extracted from hook.Event.URL      |
-| hook.Extracted.Organization | string  | Name of your organization, extracted from hook.Event.URL |
+| Variable                    | Type     | Description                                              |
+|-----------------------------|----------|----------------------------------------------------------|
+| hook.Event.IssueURL         | string   | The API URL for the associated issue                     |
+| hook.Event.IssueID          | string   | The id of the issue                                      |
+| hook.Event.Platform         | string   |                                                          |
+| hook.Event.Title            | string   | The label of the rule that was triggered                 |
+| hook.Event.Type             | string   |                                                          |
+| hook.Event.Project          | integer  |                                                          |
+| hook.Event.URL              | string   |                                                          |
+| hook.Event.Datetime         | time     |                                                          |
+| hook.Event.Datetime.Human() | string   | Format time to `Y-m-d H:i:s`                             |
+| hook.Event.URL              | string   | The API URL for the event                                |
+| hook.Event.Fingerprint      | string[] |                                                          |
+| hook.Event.Request.Method   | string   |                                                          |
+| hook.Event.Request.URL      | string   |                                                          |
+| hook.Extracted.ProjectName  | string   | Name of your project, extracted from hook.Event.URL      |
+| hook.Extracted.Organization | string   | Name of your organization, extracted from hook.Event.URL |
 
 **issue**
 
