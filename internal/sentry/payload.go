@@ -5,12 +5,13 @@ import (
 )
 
 type Payload interface {
+	GetID() string
 	GetHookResource() HookResource
 	GetData() interface{}
 }
 
 func ParsePayload(resource HookResource, pl []byte) (Payload, error) {
-	switch resource { 
+	switch resource {
 	case HookResourceEventAlert:
 		return createEventAlertFromJSON(pl)
 	case HookResourceIssue:

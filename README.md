@@ -67,3 +67,47 @@ services:
       - SENTRY_NOTIFIER_TELEGRAM_CHAT_THREAD_ID=<your telegram chat thread id>
       - SENTRY_NOTIFIER_TELEGRAM_BOT_TOKEN=<your telegram bot token>
 ```
+
+## Templating
+
+[Twig syntax](https://twig.symfony.com) is used to compile templates. The Twig port is a [Stick](https://github.com/tyler-sommer/stick).
+
+**event_alert**
+
+| Variable                    | Type    | Description                                              |
+|-----------------------------|---------|----------------------------------------------------------|
+| hook.Event.IssueURL         | string  | The API URL for the associated issue                     |
+| hook.Event.IssueID          | string  | The id of the issue                                      |
+| hook.Event.Platform         | string  |                                                          |
+| hook.Event.Title            | string  | The label of the rule that was triggered                 |
+| hook.Event.Type             | string  |                                                          |
+| hook.Event.Project          | integer |                                                          |
+| hook.Event.URL              | string  |                                                          |
+| hook.Event.Datetime         | time    |                                                          |
+| hook.Event.Datetime.Human() | string  | Format time to `Y-m-d H:i:s`                             |
+| hook.Event.URL              | string  | The API URL for the event                                |
+| hook.Request.Method         | string  |                                                          |
+| hook.Request.URL            | string  |                                                          |
+| hook.Extracted.ProjectName  | string  | Name of your project, extracted from hook.Event.URL      |
+| hook.Extracted.Organization | string  | Name of your organization, extracted from hook.Event.URL |
+
+**issue**
+
+| Variable                     | Type   | Description                                                           |
+|------------------------------|--------|-----------------------------------------------------------------------|
+| hook.Issue.Count             | string |                                                                       |
+| hook.Issue.ID                | string |                                                                       |
+| hook.Issue.Action            | string | can be `created`, `resolved`, `assigned`, `archived`, or `unresolved` |
+| hook.Issue.Level             | string |                                                                       |
+| hook.Issue.ShortID           | string |                                                                       |
+| hook.Issue.Status            | string |                                                                       |
+| hook.Issue.Type              | string |                                                                       |
+| hook.Issue.Title             | string |                                                                       |
+| hook.Issue.FirstSeen         | time   |                                                                       |
+| hook.Issue.LastSeen          | time   |                                                                       |
+| hook.Issue.FirstSeen.Human() | string | Format time to `Y-m-d H:i:s`                                          |
+| hook.Issue.LastSeen.Human()  | string | Format time to `Y-m-d H:i:s`                                          |
+| hook.Issue.Project.ID        | string |                                                                       |
+| hook.Issue.Project.Name      | string |                                                                       |
+| hook.Issue.Project.Platform  | string |                                                                       |
+| hook.Issue.Project.Slug      | string |                                                                       |

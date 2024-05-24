@@ -6,21 +6,22 @@ type IssuePayload struct {
 	Action string `json:"action"`
 	Data   struct {
 		Issue struct {
-			Count   string `json:"count"`
-			ID      string `json:"id"`
-			Level   string `json:"level"`
-			ShortID string `json:"shortId"`
-			Status  string `json:"status"`
-			Type    string `json:"type"`
-			Title   string `json:"title"`
-			Project struct {
+			Action    string `json:"-"`
+			Count     string `json:"count"`
+			ID        string `json:"id"`
+			Level     string `json:"level"`
+			ShortID   string `json:"shortId"`
+			Status    string `json:"status"`
+			Type      string `json:"type"`
+			Title     string `json:"title"`
+			LastSeen  Time   `json:"lastSeen"`
+			FirstSeen Time   `json:"firstSeen"`
+			Project   struct {
 				ID       string `json:"id"`
 				Name     string `json:"name"`
 				Platform string `json:"platform"`
 				Slug     string `json:"slug"`
 			} `json:"project"`
-			LastSeen  Time `json:"lastSeen"`
-			FirstSeen Time `json:"firstSeen"`
 		} `json:"issue"`
 	} `json:"data"`
 }
@@ -32,7 +33,13 @@ func createIssuePayload(data []byte) (*IssuePayload, error) {
 		return nil, err
 	}
 
+	pl.Data.Issue.Action = pl.Action
+
 	return pl, nil
+}
+
+func (p *IssuePayload) GetID() string {
+	return p.Data.Issue.ID
 }
 
 func (p *IssuePayload) GetHookResource() HookResource {

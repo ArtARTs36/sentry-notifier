@@ -22,6 +22,10 @@ type EventAlert struct {
 			Datetime Time   `json:"datetime"`
 			WebURL   string `json:"web_url"`
 		} `json:"event"`
+		Request struct {
+			Method string `json:"method"`
+			URL    string `json:"url"`
+		} `json:"request"`
 		Extracted struct {
 			ProjectName      string `json:"-"`
 			OrganizationName string `json:"-"`
@@ -39,6 +43,10 @@ func createEventAlertFromJSON(data []byte) (*EventAlert, error) {
 	a.extract()
 
 	return a, nil
+}
+
+func (a *EventAlert) GetID() string {
+	return a.Data.Event.IssueID
 }
 
 func (a *EventAlert) GetHookResource() HookResource {

@@ -8,6 +8,7 @@ const (
 	StrategyDefault     Strategy = StrategyImmediately
 	StrategyImmediately Strategy = "immediately"
 	StrategyAsync       Strategy = "async"
+	StrategyNull        Strategy = "null"
 )
 
 type Config struct {
