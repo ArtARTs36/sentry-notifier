@@ -42,9 +42,11 @@ func NewImmediatelyNotifier(
 }
 
 func (n *ImmediatelyNotifier) Notify(ctx context.Context, payload sentry.Payload) error {
-	templates, err := n.selectTemplates(payload)
-	if err != nil {
-		return fmt.Errorf("notifier: failed to select templates: %w", err)
+	templates := n.selectTemplates(payload)
+	if len(templates) == 0 {
+		slog.DebugContext(ctx, "[notifier] no templates selected")
+
+		return nil
 	}
 
 	slog.DebugContext(ctx, fmt.Sprintf("[notifier] selected %d templates", len(templates)))
@@ -89,7 +91,7 @@ func (n *ImmediatelyNotifier) Notify(ctx context.Context, payload sentry.Payload
 
 				slog.InfoContext(ctx, fmt.Sprintf("[notifier] sending message via %s", mess.Name()))
 
-				err = mess.Send(ctx, messenger.Message{
+				err := mess.Send(ctx, messenger.Message{
 					Body: tmpl.message,
 				})
 				if err != nil {
@@ -116,15 +118,15 @@ func (n *ImmediatelyNotifier) selectMessengers(channelName string) ([]messenger.
 	return msgs, nil
 }
 
-func (n *ImmediatelyNotifier) selectTemplates(payload sentry.Payload) ([]Template, error) {
+func (n *ImmediatelyNotifier) selectTemplates(payload sentry.Payload) []Template {
 	res := payload.GetHookResource()
 
 	msgs, exists := n.cfg.On[res]
 	if !exists {
-		return nil, fmt.Errorf("hook resource %q unsupported", res)
+		return []Template{}
 	}
 
-	return msgs, nil
+	return msgs
 }
 
 func (*ImmediatelyNotifier) Close() {
