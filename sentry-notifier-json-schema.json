@@ -142,7 +142,7 @@
         },
         "server": {
           "type": "string",
-          "description": "address to your mattermost server"
+          "description": "address to your mattermost server, example: http://localhost:8065"
         },
         "channel": {
           "oneOf": [
