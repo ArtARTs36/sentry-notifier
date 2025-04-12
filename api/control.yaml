@@ -7,6 +7,12 @@ paths:
   /test:
     get:
       operationId: SendTestNotification
+      parameters:
+        - name: event
+          in: query
+          schema:
+            $ref: "#/components/schemas/event-type"
+          required: false
       responses:
         200: {$ref: '#/components/responses/send-test-notification-response'}
 
@@ -19,6 +25,11 @@ paths:
 
 components:
   schemas:
+    event-type:
+      type: string
+      enum: [issue, event_alert]
+      default: issue
+
     health-check:
       type: object
       required: [status, channels]

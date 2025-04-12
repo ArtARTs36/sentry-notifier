@@ -26,7 +26,11 @@ type sendTestNotificationResponse struct {
 func (h *TestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	payload := sentry.ExampleIssuePayload()
+	var payload sentry.Payload = sentry.ExampleIssuePayload()
+	if eventType := r.URL.Query().Get("event"); eventType == sentry.HookResourceEventAlert {
+		payload = sentry.ExampleEventAlert()
+	}
+
 	err := h.notifier.Notify(r.Context(), payload)
 	if err != nil {
 		slog.

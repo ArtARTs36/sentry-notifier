@@ -2,10 +2,12 @@ package sentry
 
 import (
 	"encoding/json"
+	"github.com/google/uuid"
 	"log/slog"
 	"net/url"
 	"slices"
 	"strings"
+	"time"
 )
 
 type EventAlert struct {
@@ -75,4 +77,26 @@ func (a *EventAlert) extract() {
 			}
 		}
 	}
+}
+
+func ExampleEventAlert() *EventAlert {
+	pl := &EventAlert{
+		Action: "test",
+	}
+
+	pl.Data.Event.IssueURL = "https://sentry.io/api/0/projects/test-org/front-end/events/e4874d664c3540c1a32eab185f12/"
+	pl.Data.Event.IssueID = uuid.NewString()
+	pl.Data.Event.Platform = "web"
+	pl.Data.Event.Title = "Test Alert"
+	pl.Data.Event.Type = "Test Type"
+	pl.Data.Event.Project = 1
+	pl.Data.Event.URL = "https://sentry.io/api/0/projects/test-org/front-end/events/e4874d664c3540c1a32eab185f12c5ab/"
+	pl.Data.Event.Datetime.Time = time.Now()
+	pl.Data.Event.WebURL = "https://sentry.io/api/0/projects/test-org/front-end/events/e4874d664c3540c1a32eab185f12c/"
+	pl.Data.Event.Request.Method = "GET"
+	pl.Data.Event.Request.URL = "/v1/users/"
+	pl.Data.Extracted.ProjectName = "TestProject"
+	pl.Data.Extracted.OrganizationName = "TestOrganization"
+
+	return pl
 }
