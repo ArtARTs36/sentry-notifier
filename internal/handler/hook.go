@@ -22,7 +22,7 @@ func (h *HookHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	eventName, err := sentry.WrapHookResource(r.Header.Get(sentry.HeaderHookResource))
 	if err != nil {
 		slog.
-			With(slog.String("err", err.Error())).
+			With(slog.Any("err", err)).
 			ErrorContext(r.Context(), "failed to wrap hook resource")
 
 		w.WriteHeader(http.StatusBadRequest)
@@ -32,7 +32,7 @@ func (h *HookHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rawPayload, err := io.ReadAll(r.Body)
 	if err != nil {
 		slog.
-			With(slog.String("err", err.Error())).
+			With(slog.Any("err", err)).
 			ErrorContext(r.Context(), "[hook] failed to read payload")
 
 		w.WriteHeader(http.StatusInternalServerError)
@@ -43,7 +43,7 @@ func (h *HookHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	payload, err := sentry.ParsePayload(eventName, rawPayload)
 	if err != nil {
 		slog.
-			With(slog.String("err", err.Error())).
+			With(slog.Any("err", err)).
 			ErrorContext(r.Context(), "[hook] failed to parse payload")
 
 		w.WriteHeader(http.StatusBadRequest)
@@ -54,7 +54,7 @@ func (h *HookHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err = h.notifier.Notify(r.Context(), payload)
 	if err != nil {
 		slog.
-			With(slog.String("err", err.Error())).
+			With(slog.Any("err", err)).
 			ErrorContext(r.Context(), "[hook] failed to notify")
 
 		w.WriteHeader(http.StatusInternalServerError)

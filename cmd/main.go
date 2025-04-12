@@ -2,9 +2,16 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
+	"net/http"
+	"sync"
+
+	goMetrics "github.com/artarts36/go-metrics"
+
 	"github.com/artarts36/sentry-notifier/internal/app"
+	"github.com/artarts36/sentry-notifier/internal/config/cfg"
 	"github.com/artarts36/sentry-notifier/internal/config/injector"
 	"github.com/artarts36/sentry-notifier/internal/config/parser"
 	"github.com/artarts36/sentry-notifier/internal/config/storage"
@@ -12,6 +19,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/artarts36/sentry-notifier/internal/config/loader"
 )
@@ -34,7 +42,7 @@ func main() {
 	config, err := configLoader.Load(ctx, *configPath)
 	if err != nil {
 		slog.
-			With(slog.String("err", err.Error())).
+			With(slog.Any("err", err)).
 			ErrorContext(ctx, "[main] failed to load configuration")
 
 		os.Exit(1)
@@ -46,39 +54,55 @@ func main() {
 	slog.
 		Info("[main] configuration loaded")
 
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	metricsServer, metricsRegistry := registerMetrics(config)
+	hServer := app.New(config, metricsRegistry)
+	wg := &sync.WaitGroup{}
 
-	hServer := app.New(config)
-
+	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		slog.InfoContext(ctx, fmt.Sprintf("[main] starting HTTP server on %s", config.HTTP.Addr))
 
 		err = hServer.Run()
-		if err != nil {
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			slog.
-				With(slog.String("err", err.Error())).
+				With(slog.Any("err", err)).
 				ErrorContext(ctx, "[main] http server listen error")
-
-			os.Exit(1)
 			return
 		}
 	}()
 
-	<-done
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		slog.InfoContext(ctx, fmt.Sprintf("[main] starting HTTP server on %s", config.HTTP.Addr))
 
-	slog.InfoContext(ctx, "[main] stopping http server")
+		err = metricsServer.Serve()
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			slog.
+				With(slog.Any("err", err)).
+				ErrorContext(ctx, "[main] metrics server listen error")
+			return
+		}
+	}()
 
-	err = hServer.Shutdown(ctx)
-	if err != nil {
-		slog.
-			With(slog.String("err", err.Error())).
-			ErrorContext(ctx, "[main] failed to shutdown http server")
-	}
+	shutdown([]closer{
+		{
+			name:    "main-server",
+			closeFn: hServer.Shutdown,
+		},
+		{
+			name:    "metrics-server",
+			closeFn: metricsServer.ShutdownCtx,
+		},
+	}, cancel)
 
-	slog.Info("[main] canceling root context")
+	wg.Wait()
+}
 
-	cancel()
+type closer struct {
+	closeFn func(ctx context.Context) error
+	name    string
 }
 
 func newLoader() *loader.Loader {
@@ -117,4 +141,47 @@ func setupLogger(lvl string) {
 	}))
 
 	slog.SetDefault(logger)
+}
+
+func registerMetrics(config cfg.Config) (*goMetrics.Server, goMetrics.Registry) {
+	const defaultTimeout = 30 * time.Second
+
+	mcfg := goMetrics.Config{
+		Server: goMetrics.ServerConfig{
+			Addr:    config.Metrics.Addr,
+			Timeout: defaultTimeout,
+		},
+		Namespace: "sentry_notifier",
+	}
+
+	registry := goMetrics.NewDefaultRegistry(mcfg)
+
+	return goMetrics.NewServer(mcfg), registry
+}
+
+func shutdown(closers []closer, cancel context.CancelFunc) {
+	const shutdownTimeout = 30 * time.Second
+
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(ch)
+
+	sig := <-ch
+	slog.
+		With(slog.String("signal", sig.String())).
+		Info("shutdown..")
+
+	ctx, shCancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer shCancel()
+
+	for _, cl := range closers {
+		if err := cl.closeFn(ctx); err != nil {
+			slog.
+				With(slog.Any("err", err)).
+				With(slog.String("object", cl.name)).
+				Error("failed to close ")
+		}
+	}
+
+	cancel()
 }

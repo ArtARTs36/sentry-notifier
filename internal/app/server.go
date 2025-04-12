@@ -2,11 +2,9 @@ package app
 
 import (
 	"context"
+	goMetrics "github.com/artarts36/go-metrics"
 	"github.com/artarts36/sentry-notifier/internal/handler"
 	"github.com/artarts36/sentry-notifier/internal/notifier"
-	"github.com/artarts36/sentry-notifier/internal/security"
-	sloghttp "github.com/samber/slog-http"
-	"log/slog"
 	"net/http"
 	"time"
 
@@ -23,21 +21,22 @@ type Server struct {
 	server *http.Server
 
 	notifier notifier.Notifier
+
+	metricsRegistry goMetrics.Registry
 }
 
-func New(config cfg.Config) *Server {
+func New(config cfg.Config, metricsRegistry goMetrics.Registry) *Server {
 	notif := newNotifier(config)
 
-	return &Server{
-		config: config,
-
-		handler: sloghttp.New(slog.Default())(security.AuthorizeRequest(
-			handler.NewHookHandler(notif),
-			config.Security,
-		)),
-
-		notifier: notif,
+	s := &Server{
+		config:          config,
+		notifier:        notif,
+		metricsRegistry: metricsRegistry,
 	}
+
+	s.handler = s.buildHandler(handler.NewHookHandler(notif), config)
+
+	return s
 }
 
 func (s *Server) Run() error {

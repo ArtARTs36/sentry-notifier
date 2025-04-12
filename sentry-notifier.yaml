@@ -1,6 +1,9 @@
 http:
   address: :8088
 
+metrics:
+  address: :8081
+
 security:
   client_secret: '$SENTRY_NOTIFIER_SENTRY_CLIENT_SECRET'
 

@@ -3,12 +3,14 @@ package notifier
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"sync"
+
+	"github.com/tyler-sommer/stick"
+
 	"github.com/artarts36/sentry-notifier/internal/messenger"
 	"github.com/artarts36/sentry-notifier/internal/sentry"
 	"github.com/artarts36/sentry-notifier/internal/template"
-	"github.com/tyler-sommer/stick"
-	"log/slog"
-	"sync"
 )
 
 type ImmediatelyNotifier struct {
@@ -80,16 +82,14 @@ func (n *ImmediatelyNotifier) Notify(ctx context.Context, payload sentry.Payload
 	slog.InfoContext(ctx, fmt.Sprintf("[notifier] sending %d messages", allMessagesCount))
 
 	for _, tmpl := range messengersMessages {
-		tmpl := tmpl
-
 		for _, mess := range tmpl.messengers {
 			wg.Add(1)
 
-			mess := mess
 			go func() {
 				defer wg.Done()
 
-				slog.InfoContext(ctx, fmt.Sprintf("[notifier] sending message via %s", mess.Name()))
+				slog.
+					InfoContext(ctx, "[notifier] sending message via %s", slog.String("messenger", mess.Name()))
 
 				err := mess.Send(ctx, messenger.Message{
 					Body: tmpl.message,
@@ -97,7 +97,7 @@ func (n *ImmediatelyNotifier) Notify(ctx context.Context, payload sentry.Payload
 				if err != nil {
 					slog.
 						With(slog.String("messenger", mess.Name())).
-						With(slog.String("err", err.Error())).
+						With(slog.Any("err", err)).
 						WarnContext(ctx, "failed to send message")
 				}
 			}()
