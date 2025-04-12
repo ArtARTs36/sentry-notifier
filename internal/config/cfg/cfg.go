@@ -49,5 +49,17 @@ func (c *Config) Validate() error {
 		}
 	}
 
+	c.fillDefaults()
+
 	return nil
+}
+
+func (c *Config) fillDefaults() {
+	if c.HTTP.Addr == "" {
+		c.HTTP.Addr = ":8080"
+	}
+
+	if c.Control.Addr == "" {
+		c.HTTP.Addr = ":8081"
+	}
 }
