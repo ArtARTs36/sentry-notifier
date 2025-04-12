@@ -2,6 +2,7 @@ package cfg
 
 import (
 	"fmt"
+
 	"github.com/artarts36/sentry-notifier/internal/messenger"
 	"github.com/artarts36/sentry-notifier/internal/notifier"
 	"github.com/artarts36/sentry-notifier/internal/security"
@@ -60,6 +61,6 @@ func (c *Config) fillDefaults() {
 	}
 
 	if c.Control.Addr == "" {
-		c.HTTP.Addr = ":8081"
+		c.Control.Addr = ":8081"
 	}
 }

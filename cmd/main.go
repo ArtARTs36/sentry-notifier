@@ -98,7 +98,7 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		slog.InfoContext(ctx, fmt.Sprintf("[main] starting HTTP server on %s", config.HTTP.Addr))
+		slog.InfoContext(ctx, fmt.Sprintf("[main] starting main HTTP server on %s", config.HTTP.Addr))
 
 		err = hServer.Run()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
@@ -112,7 +112,7 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		slog.InfoContext(ctx, fmt.Sprintf("[main] starting HTTP server on %s", config.HTTP.Addr))
+		slog.InfoContext(ctx, fmt.Sprintf("[main] starting control HTTP server on %s", config.Control.Addr))
 
 		err = controlServer.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
