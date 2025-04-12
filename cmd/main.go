@@ -5,6 +5,8 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/artarts36/sentry-notifier/internal/health"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 	"sync"
 
@@ -54,8 +56,11 @@ func main() {
 	slog.
 		Info("[main] configuration loaded")
 
-	metricsServer, metricsRegistry := registerMetrics(config)
-	hServer := app.New(config, metricsRegistry)
+	hServer := app.New(config, goMetrics.NewDefaultRegistry(goMetrics.Config{
+		Namespace: "sentry_notifier",
+	}))
+	controlServer := registerControl(config, hServer)
+
 	wg := &sync.WaitGroup{}
 
 	wg.Add(1)
@@ -77,7 +82,7 @@ func main() {
 		defer wg.Done()
 		slog.InfoContext(ctx, fmt.Sprintf("[main] starting HTTP server on %s", config.HTTP.Addr))
 
-		err = metricsServer.Serve()
+		err = controlServer.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			slog.
 				With(slog.Any("err", err)).
@@ -92,8 +97,8 @@ func main() {
 			closeFn: hServer.Shutdown,
 		},
 		{
-			name:    "metrics-server",
-			closeFn: metricsServer.ShutdownCtx,
+			name:    "control-server",
+			closeFn: controlServer.Shutdown,
 		},
 	}, cancel)
 
@@ -143,20 +148,20 @@ func setupLogger(lvl string) {
 	slog.SetDefault(logger)
 }
 
-func registerMetrics(config cfg.Config) (*goMetrics.Server, goMetrics.Registry) {
-	const defaultTimeout = 30 * time.Second
+func registerControl(config cfg.Config, target *app.Server) *http.Server {
+	const readTimeout = 30 * time.Second
 
-	mcfg := goMetrics.Config{
-		Server: goMetrics.ServerConfig{
-			Addr:    config.Metrics.Addr,
-			Timeout: defaultTimeout,
-		},
-		Namespace: "sentry_notifier",
+	mux := http.NewServeMux()
+	mux.Handle("/metrics", promhttp.Handler())
+	mux.Handle("/health", health.Handler(target.Health))
+
+	hServer := &http.Server{
+		Addr:        config.Metrics.Addr,
+		Handler:     mux,
+		ReadTimeout: readTimeout,
 	}
 
-	registry := goMetrics.NewDefaultRegistry(mcfg)
-
-	return goMetrics.NewServer(mcfg), registry
+	return hServer
 }
 
 func shutdown(closers []closer, cancel context.CancelFunc) {

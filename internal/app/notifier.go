@@ -8,10 +8,11 @@ import (
 	"github.com/artarts36/sentry-notifier/internal/template"
 )
 
-func newNotifier(config cfg.Config, metr *metrics.Group) notifier.Notifier {
+func newNotifier(config cfg.Config, metr *metrics.Group) (notifier.Notifier, map[string][]messenger.Messenger) {
 	renderer := template.NewRenderer(collectTemplates(config))
+	messengers := collectMessengers(config)
 
-	return notifier.CreateNotifier(collectMessengers(config), renderer, config.Notify, metr)
+	return notifier.CreateNotifier(messengers, renderer, config.Notify, metr), messengers
 }
 
 func collectTemplates(config cfg.Config) map[string]string {
@@ -29,12 +30,16 @@ func collectMessengers(config cfg.Config) map[string][]messenger.Messenger {
 	msgs := map[string][]messenger.Messenger{}
 
 	for channelName, channel := range config.Channels {
-		for _, tg := range channel.Telegram {
-			if _, exists := msgs[channelName]; !exists {
-				msgs[channelName] = []messenger.Messenger{}
-			}
+		if _, exists := msgs[channelName]; !exists {
+			msgs[channelName] = []messenger.Messenger{}
+		}
 
+		for _, tg := range channel.Telegram {
 			msgs[channelName] = append(msgs[channelName], messenger.NewTelegram(*tg))
+		}
+
+		for _, mm := range channel.Mattermost {
+			msgs[channelName] = append(msgs[channelName], messenger.NewMattermost(*mm))
 		}
 	}
 
