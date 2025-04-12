@@ -2,12 +2,14 @@ package app
 
 import (
 	"context"
+	"errors"
 	goMetrics "github.com/artarts36/go-metrics"
 	"github.com/artarts36/sentry-notifier/internal/handler"
 	"github.com/artarts36/sentry-notifier/internal/health"
 	"github.com/artarts36/sentry-notifier/internal/messenger"
 	"github.com/artarts36/sentry-notifier/internal/metrics"
 	"github.com/artarts36/sentry-notifier/internal/notifier"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -72,8 +74,13 @@ func (s *Server) Health(ctx context.Context) *health.Check {
 	}
 
 	reason := func(err error) string {
+		var perr *messenger.PingError
+		if errors.As(err, &perr) {
+			return perr.Reason
+		}
+
 		if err != nil {
-			return err.Error()
+			return "unexpected"
 		}
 		return ""
 	}
@@ -85,6 +92,13 @@ func (s *Server) Health(ctx context.Context) *health.Check {
 			pingErr := m.Ping(ctx)
 			if pingErr != nil {
 				result.Status = false
+				slog.ErrorContext(
+					ctx,
+					"[health] failed to ping messenger",
+					slog.String("messenger", m.Name()),
+					slog.String("channel", channelName),
+					slog.Any("err", pingErr),
+				)
 			}
 
 			result.Channels[channelName][m.Name()] = append(result.Channels[channelName][m.Name()], health.CheckChannel{
