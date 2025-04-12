@@ -22,3 +22,10 @@ func chatNotFoundPingError(err error) error {
 		Err:    err,
 	}
 }
+
+func networkPingError(err error) error {
+	return &PingError{
+		Reason: "network_error",
+		Err:    err,
+	}
+}

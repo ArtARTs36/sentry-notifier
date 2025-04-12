@@ -66,6 +66,9 @@ func (m *Mattermost) Ping(ctx context.Context) error {
 		if strings.Contains(err.Error(), "Channel does not exist") {
 			return chatNotFoundPingError(err)
 		}
+		if strings.Contains(err.Error(), "dial tcp") {
+			return networkPingError(err)
+		}
 
 		return fmt.Errorf("load channel: %w", err)
 	}

@@ -13,7 +13,7 @@ channels:
       - server: 'http://localhost:8065'
         token: 'byncedkdmtbkmq4i7ossdtc6rw'
         channel:
-          name: 'alertsa'
+          name: 'alerts'
           team_name: 'test'
 
 notify:
