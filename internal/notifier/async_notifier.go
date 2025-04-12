@@ -56,30 +56,33 @@ func (n *AsyncNotifier) run() {
 	n.running = true
 
 	go func() {
-		n.notify()
+		n.listen()
 	}()
 }
 
-func (n *AsyncNotifier) notify() {
-	const timeout = time.Second * 10
-
-	for { //nolint: gosimple // not need
-		select {
-		case pl := <-n.queue:
-			ctx, cancel := context.WithTimeout(context.Background(), timeout)
-
-			slog.
-				With(slog.Any("payload", pl)).
-				DebugContext(ctx, "[async-notifier] processing payload")
-
-			err := n.notifier.Notify(ctx, pl)
-			if err != nil {
-				slog.
-					With(slog.String("err", err.Error())).
-					ErrorContext(ctx, "[async-notifier] failed to notify")
-			}
-
-			cancel()
-		}
+func (n *AsyncNotifier) listen() {
+	for pl := range n.queue {
+		n.notify(pl)
 	}
 }
+
+func (n *AsyncNotifier) notify(pl sentry.Payload) {
+	const timeout = time.Second * 10
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	slog.
+		With(slog.Any("payload", pl)).
+		DebugContext(ctx, "[async-notifier] processing payload")
+
+	err := n.notifier.Notify(ctx, pl)
+	if err != nil {
+		slog.
+			With(slog.Any("err", err)).
+			ErrorContext(ctx, "[async-notifier] failed to listen")
+	}
+
+	cancel()
+}
+

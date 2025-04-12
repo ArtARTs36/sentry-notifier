@@ -1,0 +1,23 @@
+openapi: 3.0.0
+info:
+  title: 'Sentry Notifier: API панели управления'
+  version: '1.0.0'
+
+paths:
+  /test:
+    get:
+      operationId: SendTestNotification
+      responses:
+        200: {$ref: '#/components/responses/send-test-notification-response'}
+
+components:
+  responses:
+    send-test-notification-response:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 'Notifications was scheduled'

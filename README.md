@@ -26,6 +26,13 @@ channels:
       - chat_id: '$SENTRY_NOTIFIER_TELEGRAM_CHAT_ID'
         thread_id: '$SENTRY_NOTIFIER_TELEGRAM_CHAT_THREAD_ID'
         bot_token: '$SENTRY_NOTIFIER_TELEGRAM_BOT_TOKEN'
+        
+    mattermost:
+      - server: 'http//localhost:8065'
+        token: '$SENTRY_NOTIFIER_MATTERMOST_TOKEN'
+        channel:
+          name: 'alerts'
+          team_name: 'My Team'
 
 notify:
   strategy: async

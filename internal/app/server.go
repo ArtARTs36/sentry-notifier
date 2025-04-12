@@ -28,7 +28,7 @@ type Server struct {
 	messengers map[string][]messenger.Messenger
 }
 
-func New(config cfg.Config, metricsRegistry goMetrics.Registry) *Server {
+func New(config cfg.Config, metricsRegistry goMetrics.Registry) (*Server, notifier.Notifier) {
 	metr := metrics.NewGroup(metricsRegistry)
 
 	notif, messengers := newNotifier(config, metr)
@@ -41,7 +41,7 @@ func New(config cfg.Config, metricsRegistry goMetrics.Registry) *Server {
 
 	s.handler = s.buildHandler(handler.NewHookHandler(notif), config)
 
-	return s
+	return s, notif
 }
 
 func (s *Server) Run() error {
@@ -61,8 +61,6 @@ func (s *Server) Run() error {
 
 func (s *Server) Shutdown(ctx context.Context) error {
 	err := s.server.Shutdown(ctx)
-
-	s.notifier.Close()
 
 	return err
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/artarts36/sentry-notifier/internal/handler"
 	"github.com/artarts36/sentry-notifier/internal/health"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
@@ -88,10 +89,10 @@ func main() {
 	slog.
 		Info("[main] configuration loaded")
 
-	hServer := app.New(config, goMetrics.NewDefaultRegistry(goMetrics.Config{
+	hServer, notifier := app.New(config, goMetrics.NewDefaultRegistry(goMetrics.Config{
 		Namespace: "sentry_notifier",
 	}))
-	controlServer := registerControl(config, hServer)
+	controlServer := registerControl(config, hServer, handler.NewTestHandler(notifier))
 
 	wg := &sync.WaitGroup{}
 
@@ -131,6 +132,13 @@ func main() {
 		{
 			name:    "control-server",
 			closeFn: controlServer.Shutdown,
+		},
+		{
+			name: "notifier",
+			closeFn: func(_ context.Context) error {
+				notifier.Close()
+				return nil
+			},
 		},
 	}, cancel)
 
@@ -177,12 +185,13 @@ func setupLogger(lvl string) {
 	slog.SetDefault(logger)
 }
 
-func registerControl(config cfg.Config, target *app.Server) *http.Server {
+func registerControl(config cfg.Config, target *app.Server, testHandler *handler.TestHandler) *http.Server {
 	const readTimeout = 30 * time.Second
 
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
 	mux.Handle("/health", health.Handler(target.Health))
+	mux.Handle("/test", testHandler)
 
 	hServer := &http.Server{
 		Addr:        config.Control.Addr,
@@ -203,17 +212,19 @@ func shutdown(closers []closer, cancel context.CancelFunc) {
 	sig := <-ch
 	slog.
 		With(slog.String("signal", sig.String())).
-		Info("shutdown..")
+		Info("[main] shutdown..")
 
 	ctx, shCancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer shCancel()
 
 	for _, cl := range closers {
+		slog.Info("[main] closing", slog.String("object", cl.name))
+
 		if err := cl.closeFn(ctx); err != nil {
 			slog.
 				With(slog.Any("err", err)).
 				With(slog.String("object", cl.name)).
-				Error("failed to close")
+				Error("[main] failed to close")
 		}
 	}
 
