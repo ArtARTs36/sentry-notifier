@@ -21,7 +21,7 @@ func (l *YAML) Parse(_ context.Context, content []byte) (cfg.Config, error) {
 
 	err := yaml.Unmarshal(content, &conf)
 	if err != nil {
-		return conf, fmt.Errorf("failed to unmarshal YAML: %w", err)
+		return conf, fmt.Errorf("failed to unmarshal yaml: %w", err)
 	}
 
 	return conf, nil

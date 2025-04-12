@@ -9,22 +9,22 @@ import (
 
 type Config struct {
 	HTTP struct {
-		Addr string `yaml:"address"`
-	} `yaml:"http"`
+		Addr string `yaml:"address" json:"address"`
+	} `yaml:"http" json:"http"`
 
 	Control struct {
-		Addr string `yaml:"address"`
-	} `yaml:"control"`
+		Addr string `yaml:"address" json:"address"`
+	} `yaml:"control" json:"control"`
 
 	Log struct {
-		Level string `yaml:"level"`
-	} `yaml:"log"`
+		Level string `yaml:"level" json:"level"`
+	} `yaml:"log" json:"log"`
 
-	Security security.Config `yaml:"security"`
+	Security security.Config `yaml:"security" json:"security"`
 
-	Channels map[string]Channel `yaml:"channels"`
+	Channels map[string]Channel `yaml:"channels" json:"channels"`
 
-	Notify notifier.Config `yaml:"notify"`
+	Notify notifier.Config `yaml:"notify" json:"notify"`
 }
 
 type Channel struct {

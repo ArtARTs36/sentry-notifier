@@ -12,6 +12,6 @@ const (
 )
 
 type Config struct {
-	Strategy Strategy                           `yaml:"strategy"`
-	On       map[sentry.HookResource][]Template `yaml:"on"`
+	Strategy Strategy                           `yaml:"strategy" json:"strategy"`
+	On       map[sentry.HookResource][]Template `yaml:"on" json:"on"`
 }

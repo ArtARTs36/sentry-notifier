@@ -4,6 +4,7 @@
 
 Supported messengers:
 - Telegram
+- Mattermost
 
 ## Configuration
 
@@ -11,7 +12,10 @@ Configuration structure declared in [sentry-notifier-json-schema.json](./sentry-
 
 ```yaml
 http:
-  address: :8088
+  address: :8080
+  
+control:
+  address: :8081
 
 security:
   client_secret: '$SENTRY_NOTIFIER_SENTRY_CLIENT_SECRET'

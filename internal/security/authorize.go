@@ -11,7 +11,7 @@ import (
 )
 
 type Config struct {
-	ClientToken string `yaml:"client_secret"`
+	ClientToken string `yaml:"client_secret" json:"client_secret"`
 }
 
 func AuthorizeRequest(next http.Handler, cfg Config) http.Handler {

@@ -25,7 +25,7 @@ type MattermostConfig struct {
 
 		TeamName string `yaml:"team_name" json:"team"`
 		TeamID   string `yaml:"team_id" json:"team_id"`
-	} `yaml:"channel"`
+	} `yaml:"channel" json:"channel"`
 }
 
 func (c *MattermostConfig) Validate() error {

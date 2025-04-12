@@ -37,9 +37,6 @@ func (e *Env) Inject(config cfg.Config) (cfg.Config, error) { //nolint:gocognit 
 		for _, mm := range channel.Mattermost {
 			if channel.Mattermost != nil {
 				var err error
-				if err != nil {
-					return cfg.Config{}, err
-				}
 				mm.Server, err = e.transform(mm.Server)
 				if err != nil {
 					return cfg.Config{}, err

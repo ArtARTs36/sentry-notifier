@@ -23,10 +23,10 @@ type ImmediatelyNotifier struct {
 }
 
 type Template struct {
-	Message string `yaml:"message"`
-	To      string `yaml:"to"`
+	Message string `yaml:"message" json:"message"`
+	To      string `yaml:"to" json:"to"`
 
-	MessageTemplateID string `yaml:"-"`
+	MessageTemplateID string `yaml:"-" json:"-"`
 }
 
 type messengersMessage struct {

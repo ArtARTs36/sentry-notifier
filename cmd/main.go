@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"flag"
 	"fmt"
 	"github.com/artarts36/sentry-notifier/internal/health"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -26,29 +25,62 @@ import (
 	"github.com/artarts36/sentry-notifier/internal/config/loader"
 )
 
+var configCandidates = []string{
+	"env://SENTRY_NOTIFIER_CONFIG",
+	"sentry-notifier.yaml",
+	"sentry-notifier.json",
+}
+
+func resolveConfigPath(store storage.Storage) (string, error) {
+	for _, candidate := range configCandidates {
+		exists, err := store.Exists(candidate)
+		if err != nil {
+			return "", fmt.Errorf("check exists path %q: %w", candidate, err)
+		}
+
+		if exists {
+			return candidate, nil
+		}
+	}
+
+	return "", errors.New("config not found")
+}
+
+func loadConfig(ctx context.Context) (cfg.Config, error) {
+	slog.Info("[main] loading configuration")
+
+	store := storage.Resolve(storage.NewResolver(
+		storage.NewFilesystem(),
+		map[string]storage.Storage{
+			"env://": storage.NewEnv(),
+		},
+	))
+
+	configPath, err := resolveConfigPath(store)
+	if err != nil {
+		return cfg.Config{}, fmt.Errorf("resolve path: %w", err)
+	}
+
+	slog.Info("[main] config path resolved", slog.String("path", configPath))
+
+	configLoader := newLoader(store)
+	config, err := configLoader.Load(ctx, configPath)
+	if err != nil {
+		return cfg.Config{}, err
+	}
+
+	return config, nil
+}
+
 func main() {
 	setupLogger("debug")
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	configPath := flag.String("config", "sentry-notifier.yaml", "path to config file")
-	if configPath == nil || *configPath == "" {
-		slog.ErrorContext(ctx, "[main] missing config path")
-		os.Exit(1)
-		return
-	}
-
-	slog.Info("[main] loading configuration")
-
-	configLoader := newLoader()
-	config, err := configLoader.Load(ctx, *configPath)
+	config, err := loadConfig(ctx)
 	if err != nil {
-		slog.
-			With(slog.Any("err", err)).
-			ErrorContext(ctx, "[main] failed to load configuration")
-
+		slog.ErrorContext(ctx, "[main] failed to load config", slog.Any("err", err))
 		os.Exit(1)
-		return
 	}
 
 	setupLogger(config.Log.Level)
@@ -110,13 +142,10 @@ type closer struct {
 	name    string
 }
 
-func newLoader() *loader.Loader {
+func newLoader(store storage.Storage) *loader.Loader {
 	return loader.New(
-		storage.NewFilesystem(),
-		map[string]parser.Parser{
-			"yaml": parser.NewYAML(),
-			"yml":  parser.NewYAML(),
-		},
+		store,
+		parser.NewResolver(),
 		injector.NewComposite([]injector.Injector{
 			injector.NewEnv(),
 			injector.NewTemplateID(),
@@ -184,7 +213,7 @@ func shutdown(closers []closer, cancel context.CancelFunc) {
 			slog.
 				With(slog.Any("err", err)).
 				With(slog.String("object", cl.name)).
-				Error("failed to close ")
+				Error("failed to close")
 		}
 	}
 

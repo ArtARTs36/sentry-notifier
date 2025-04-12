@@ -18,10 +18,10 @@ type Telegram struct {
 }
 
 type TelegramConfig struct {
-	Host     string `yaml:"host"`
-	BotToken string `yaml:"bot_token"`
-	ChatID   string `yaml:"chat_id"`
-	ThreadID string `yaml:"thread_id,omitempty"`
+	Host     string `yaml:"host" json:"host"`
+	BotToken string `yaml:"bot_token" json:"bot_token"`
+	ChatID   string `yaml:"chat_id" json:"chat_id"`
+	ThreadID string `yaml:"thread_id,omitempty" json:"thread_id"`
 }
 
 type telegramRequest struct {
