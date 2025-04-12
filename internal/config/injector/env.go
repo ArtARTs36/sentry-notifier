@@ -14,7 +14,7 @@ func NewEnv() *Env {
 	return &Env{}
 }
 
-func (e *Env) Inject(config cfg.Config) (cfg.Config, error) {
+func (e *Env) Inject(config cfg.Config) (cfg.Config, error) { //nolint:gocognit // complex
 	for _, channel := range config.Channels {
 		for _, telegramConfig := range channel.Telegram {
 			if channel.Telegram != nil {
@@ -28,6 +28,24 @@ func (e *Env) Inject(config cfg.Config) (cfg.Config, error) {
 					return cfg.Config{}, err
 				}
 				telegramConfig.ThreadID, err = e.transform(telegramConfig.ThreadID)
+				if err != nil {
+					return cfg.Config{}, err
+				}
+			}
+		}
+
+		for _, mm := range channel.Mattermost {
+			if channel.Mattermost != nil {
+				var err error
+				mm.Username, err = e.transform(mm.Username)
+				if err != nil {
+					return cfg.Config{}, err
+				}
+				mm.Server, err = e.transform(mm.Server)
+				if err != nil {
+					return cfg.Config{}, err
+				}
+				mm.Token, err = e.transform(mm.Token)
 				if err != nil {
 					return cfg.Config{}, err
 				}

@@ -1,6 +1,7 @@
 package cfg
 
 import (
+	"fmt"
 	"github.com/artarts36/sentry-notifier/internal/messenger"
 	"github.com/artarts36/sentry-notifier/internal/notifier"
 	"github.com/artarts36/sentry-notifier/internal/security"
@@ -27,5 +28,26 @@ type Config struct {
 }
 
 type Channel struct {
-	Telegram []*messenger.TelegramConfig `yaml:"telegram,omitempty"`
+	Telegram   []*messenger.TelegramConfig   `yaml:"telegram,omitempty" json:"telegram,omitempty"`
+	Mattermost []*messenger.MattermostConfig `yaml:"mattermost,omitempty" json:"mattermost,omitempty"`
+}
+
+func (c *Channel) Validate() error {
+	for i, mm := range c.Mattermost {
+		if err := mm.Validate(); err != nil {
+			return fmt.Errorf("mattermost[%d]: %w", i, err)
+		}
+	}
+
+	return nil
+}
+
+func (c *Config) Validate() error {
+	for channelName, channel := range c.Channels {
+		if err := channel.Validate(); err != nil {
+			return fmt.Errorf("channel %q: %w", channelName, err)
+		}
+	}
+
+	return nil
 }

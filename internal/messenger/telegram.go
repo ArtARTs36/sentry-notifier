@@ -45,6 +45,10 @@ func (t *Telegram) Name() string {
 	return "telegram"
 }
 
+func (t *Telegram) Ping(_ context.Context) error {
+	return nil
+}
+
 func (t *Telegram) Send(ctx context.Context, message Message) error {
 	msgBody := strings.ReplaceAll(message.Body, "-", "\\-")
 	msgBody = strings.ReplaceAll(msgBody, ".", "\\.")

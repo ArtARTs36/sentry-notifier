@@ -41,6 +41,10 @@ func (l *Loader) Load(ctx context.Context, path string) (cfg.Config, error) {
 		return cfg.Config{}, fmt.Errorf("failed to parse config: %w", err)
 	}
 
+	if err = config.Validate(); err != nil {
+		return cfg.Config{}, fmt.Errorf("config invalid: %w", err)
+	}
+
 	config, err = l.injector.Inject(config)
 	if err != nil {
 		return cfg.Config{}, fmt.Errorf("failed to inject config: %w", err)
