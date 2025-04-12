@@ -23,6 +23,12 @@ paths:
         200: {$ref: '#/components/responses/health-check-response'}
         500: {$ref: '#/components/responses/health-check-response'}
 
+  /metrics:
+    get:
+      operationId: GetMetrics
+      responses:
+        default: {$ref: '#/components/responses/get-metrics-response'}
+
 components:
   schemas:
     event-type:
@@ -52,6 +58,13 @@ components:
                     type: string
 
   responses:
+    get-metrics-response:
+      description: Ответ на запрос метрик. В формате Prometheus.
+      content:
+        text/plain:
+          schema:
+            type: string
+
     health-check-response:
       description: Результат проверки здоровья
       content:
