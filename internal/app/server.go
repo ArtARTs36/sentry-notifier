@@ -7,6 +7,7 @@ import (
 	"github.com/artarts36/sentry-notifier/internal/handler"
 	"github.com/artarts36/sentry-notifier/internal/health"
 	"github.com/artarts36/sentry-notifier/internal/messenger"
+	messengererrors "github.com/artarts36/sentry-notifier/internal/messenger/errs"
 	"github.com/artarts36/sentry-notifier/internal/metrics"
 	"github.com/artarts36/sentry-notifier/internal/notifier"
 	"log/slog"
@@ -74,14 +75,15 @@ func (s *Server) Health(ctx context.Context) *health.Check {
 	}
 
 	reason := func(err error) string {
-		var perr *messenger.PingError
-		if errors.As(err, &perr) {
-			return perr.Reason
-		}
-
 		if err != nil {
+			var perr messengererrors.Error
+			if errors.As(err, &perr) {
+				return perr.Reason()
+			}
+
 			return "unexpected"
 		}
+
 		return ""
 	}
 

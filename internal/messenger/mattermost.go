@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
-
 	"github.com/mattermost/mattermost-server/v6/model"
 )
 
@@ -60,16 +58,6 @@ func NewMattermost(cfg MattermostConfig) *Mattermost {
 func (m *Mattermost) Ping(ctx context.Context) error {
 	err := m.loadChannel(ctx)
 	if err != nil {
-		if strings.Contains(err.Error(), "Invalid or expired session") {
-			return invalidCredentialsPingError(err)
-		}
-		if strings.Contains(err.Error(), "Channel does not exist") {
-			return chatNotFoundPingError(err)
-		}
-		if strings.Contains(err.Error(), "dial tcp") {
-			return networkPingError(err)
-		}
-
 		return fmt.Errorf("load channel: %w", err)
 	}
 	return nil
