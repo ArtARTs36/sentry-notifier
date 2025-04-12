@@ -10,9 +10,46 @@ paths:
       responses:
         200: {$ref: '#/components/responses/send-test-notification-response'}
 
+  /health:
+    get:
+      operationId: HealthCheck
+      responses:
+        200: {$ref: '#/components/responses/health-check-response'}
+        500: {$ref: '#/components/responses/health-check-response'}
+
 components:
+  schemas:
+    health-check:
+      type: object
+      required: [status, channels]
+      properties:
+        status:
+          type: boolean
+        channels:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: array
+              items:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: boolean
+                  reason:
+                    type: string
+
   responses:
+    health-check-response:
+      description: Результат проверки здоровья
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/health-check"
+
     send-test-notification-response:
+      description: Ответ на отправку тестовых уведомлений
       content:
         application/json:
           schema:
