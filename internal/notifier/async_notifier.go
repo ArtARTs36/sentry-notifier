@@ -2,6 +2,7 @@ package notifier
 
 import (
 	"context"
+	"github.com/artarts36/sentry-notifier/internal/metrics"
 	"github.com/artarts36/sentry-notifier/internal/sentry"
 	"log/slog"
 	"time"
@@ -14,12 +15,20 @@ type AsyncNotifier struct {
 	running bool
 }
 
-func NewAsyncNotifier(notifier Notifier) *AsyncNotifier {
+func NewAsyncNotifier(notifier Notifier, metr *metrics.Notifier) *AsyncNotifier {
 	const queueSize = 500
+
+	queue := make(chan sentry.Payload, queueSize)
+
+	metr.ObserveAsyncQueueSize(func() int {
+		return len(queue)
+	})
+
+	metr.SetAsyncQueueCapacity(queueSize)
 
 	return &AsyncNotifier{
 		notifier: notifier,
-		queue:    make(chan sentry.Payload, queueSize),
+		queue:    queue,
 	}
 }
 

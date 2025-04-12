@@ -16,7 +16,7 @@ func CreateNotifier(
 	case StrategyImmediately:
 		return NewImmediatelyNotifier(messengers, renderer, cfg, metr.Messages)
 	case StrategyAsync:
-		return NewAsyncNotifier(NewImmediatelyNotifier(messengers, renderer, cfg, metr.Messages))
+		return NewAsyncNotifier(NewImmediatelyNotifier(messengers, renderer, cfg, metr.Messages), metr.Notifier)
 	case StrategyNull:
 		return NewNoopNotifier()
 	}
