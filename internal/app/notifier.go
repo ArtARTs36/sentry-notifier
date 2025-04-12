@@ -3,14 +3,15 @@ package app
 import (
 	"github.com/artarts36/sentry-notifier/internal/config/cfg"
 	"github.com/artarts36/sentry-notifier/internal/messenger"
+	"github.com/artarts36/sentry-notifier/internal/metrics"
 	"github.com/artarts36/sentry-notifier/internal/notifier"
 	"github.com/artarts36/sentry-notifier/internal/template"
 )
 
-func newNotifier(config cfg.Config) notifier.Notifier {
+func newNotifier(config cfg.Config, metr *metrics.Group) notifier.Notifier {
 	renderer := template.NewRenderer(collectTemplates(config))
 
-	return notifier.CreateNotifier(collectMessengers(config), renderer, config.Notify)
+	return notifier.CreateNotifier(collectMessengers(config), renderer, config.Notify, metr)
 }
 
 func collectTemplates(config cfg.Config) map[string]string {

@@ -4,6 +4,7 @@ import (
 	"context"
 	goMetrics "github.com/artarts36/go-metrics"
 	"github.com/artarts36/sentry-notifier/internal/handler"
+	"github.com/artarts36/sentry-notifier/internal/metrics"
 	"github.com/artarts36/sentry-notifier/internal/notifier"
 	"net/http"
 	"time"
@@ -21,17 +22,16 @@ type Server struct {
 	server *http.Server
 
 	notifier notifier.Notifier
-
-	metricsRegistry goMetrics.Registry
 }
 
 func New(config cfg.Config, metricsRegistry goMetrics.Registry) *Server {
-	notif := newNotifier(config)
+	metr := metrics.NewGroup(metricsRegistry)
+
+	notif := newNotifier(config, metr)
 
 	s := &Server{
-		config:          config,
-		notifier:        notif,
-		metricsRegistry: metricsRegistry,
+		config:   config,
+		notifier: notif,
 	}
 
 	s.handler = s.buildHandler(handler.NewHookHandler(notif), config)

@@ -75,7 +75,7 @@ func (t *Telegram) Send(ctx context.Context, message Message) error {
 	defer func() {
 		if bodyCloseErr := resp.Body.Close(); bodyCloseErr != nil {
 			slog.
-				With(slog.String("bodyCloseErr", bodyCloseErr.Error())).
+				With(slog.Any("err", bodyCloseErr)).
 				ErrorContext(ctx, "[telegram] failed to close response body")
 		}
 	}()
