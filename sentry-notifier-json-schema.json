@@ -13,6 +13,18 @@
         "address"
       ]
     },
+    "control": {
+      "type": "object",
+      "description": "config for control server, which contains metrics and health handlers",
+      "properties": {
+        "address": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "address"
+      ]
+    },
     "log": {
       "type": "object",
       "properties": {
@@ -90,29 +102,95 @@
       "properties": {
         "telegram": {
           "type": "array",
-          "items": [
+          "items": {
+            "$ref": "#/definitions/telegram"
+          }
+        },
+        "mattermost": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mattermost"
+          }
+        }
+      }
+    },
+    "telegram": {
+      "type": "object",
+      "properties": {
+        "chat_id": {
+          "type": "string"
+        },
+        "thread_id": {
+          "type": "string"
+        },
+        "bot_token": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "chat_id",
+        "thread_id",
+        "bot_token"
+      ]
+    },
+    "mattermost": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "bot token"
+        },
+        "server": {
+          "type": "string",
+          "description": "address to your mattermost server"
+        },
+        "channel": {
+          "oneOf": [
             {
               "type": "object",
+              "required": ["id"],
               "properties": {
-                "chat_id": {
-                  "type": "string"
-                },
-                "thread_id": {
-                  "type": "string"
-                },
-                "bot_token": {
-                  "type": "string"
+                "id": {
+                  "type": "string",
+                  "description": "id of mattermost channel"
                 }
-              },
-              "required": [
-                "chat_id",
-                "thread_id",
-                "bot_token"
-              ]
+              }
+            },
+            {
+              "type": "object",
+              "required": ["name", "team_id"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "name of mattermost channel"
+                },
+                "team_id": {
+                  "type": "string",
+                  "description": "id of mattermost team"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": ["name", "team_name"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "name of mattermost channel"
+                },
+                "team_name": {
+                  "type": "string",
+                  "description": "name of mattermost team"
+                }
+              }
             }
           ]
         }
-      }
+      },
+      "required": [
+        "token",
+        "server"
+      ]
     },
     "trigger": {
       "type": "object",

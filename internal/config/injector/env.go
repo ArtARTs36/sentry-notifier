@@ -37,7 +37,6 @@ func (e *Env) Inject(config cfg.Config) (cfg.Config, error) { //nolint:gocognit 
 		for _, mm := range channel.Mattermost {
 			if channel.Mattermost != nil {
 				var err error
-				mm.Username, err = e.transform(mm.Username)
 				if err != nil {
 					return cfg.Config{}, err
 				}

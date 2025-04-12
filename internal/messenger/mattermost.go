@@ -15,9 +15,8 @@ type Mattermost struct {
 }
 
 type MattermostConfig struct {
-	Username string `yaml:"username" json:"username"`
-	Token    string `yaml:"token" json:"token"`
-	Server   string `yaml:"server" json:"server"`
+	Token  string `yaml:"token" json:"token"`
+	Server string `yaml:"server" json:"server"`
 
 	Channel struct {
 		ID string `yaml:"id" json:"channel_id"` // one of
