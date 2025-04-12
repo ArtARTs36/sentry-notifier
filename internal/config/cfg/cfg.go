@@ -12,9 +12,9 @@ type Config struct {
 		Addr string `yaml:"address"`
 	} `yaml:"http"`
 
-	Metrics struct {
+	Control struct {
 		Addr string `yaml:"address"`
-	} `yaml:"metrics"`
+	} `yaml:"control"`
 
 	Log struct {
 		Level string `yaml:"level"`

@@ -1,7 +1,7 @@
 http:
   address: :8088
 
-metrics:
+control:
   address: :8081
 
 security:

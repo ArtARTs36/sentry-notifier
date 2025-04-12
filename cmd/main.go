@@ -156,7 +156,7 @@ func registerControl(config cfg.Config, target *app.Server) *http.Server {
 	mux.Handle("/health", health.Handler(target.Health))
 
 	hServer := &http.Server{
-		Addr:        config.Metrics.Addr,
+		Addr:        config.Control.Addr,
 		Handler:     mux,
 		ReadTimeout: readTimeout,
 	}
