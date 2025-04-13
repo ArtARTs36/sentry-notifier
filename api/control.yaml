@@ -2,17 +2,16 @@ openapi: 3.0.0
 info:
   title: 'Sentry Notifier: API панели управления'
   version: '1.0.0'
+  contact:
+    name: Artem Ukrainskii
+    email: temicska99@mail.ru
 
 paths:
   /test:
     get:
       operationId: SendTestNotification
       parameters:
-        - name: event
-          in: query
-          schema:
-            $ref: "#/components/schemas/event-type"
-          required: false
+        - {$ref: '#/components/parameters/event-type-query'}
       responses:
         200: {$ref: '#/components/responses/send-test-notification-response'}
 
@@ -30,9 +29,18 @@ paths:
         default: {$ref: '#/components/responses/get-metrics-response'}
 
 components:
+  parameters:
+    event-type-query:
+      name: event
+      in: query
+      schema:
+        $ref: "#/components/schemas/event-type"
+      required: false
+
   schemas:
     event-type:
       type: string
+      description: 'Тип события'
       enum: [issue, event_alert]
       default: issue
 
@@ -42,6 +50,8 @@ components:
       properties:
         status:
           type: boolean
+          description: 'Статус проверки всех каналов'
+          example: true
         channels:
           type: object
           additionalProperties:
@@ -54,8 +64,12 @@ components:
                 properties:
                   status:
                     type: boolean
+                    description: 'Статус проверки канала'
+                    example: true
                   reason:
                     type: string
+                    description: 'Описание ошибки'
+                    example: 'chat_not_found'
 
   responses:
     get-metrics-response:
