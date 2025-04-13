@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"github.com/artarts36/sentry-notifier/internal/handler"
 	"github.com/artarts36/sentry-notifier/internal/health"
+	"github.com/artarts36/sentry-notifier/internal/metrics"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
+	"strings"
 	"sync"
 
 	goMetrics "github.com/artarts36/go-metrics"
@@ -32,6 +34,8 @@ var configCandidates = []string{
 	"sentry-notifier.json",
 }
 
+var version = "v1.0.0"
+
 func resolveConfigPath(store storage.Storage) (string, error) {
 	for _, candidate := range configCandidates {
 		exists, err := store.Exists(candidate)
@@ -44,7 +48,7 @@ func resolveConfigPath(store storage.Storage) (string, error) {
 		}
 	}
 
-	return "", errors.New("config not found")
+	return "", fmt.Errorf("config not found, scanned in: [%s]", strings.Join(configCandidates, ","))
 }
 
 func loadConfig(ctx context.Context) (cfg.Config, error) {
@@ -76,6 +80,8 @@ func loadConfig(ctx context.Context) (cfg.Config, error) {
 func main() {
 	setupLogger("debug")
 
+	slog.Debug("running sentry-notifier", slog.String("version", version))
+
 	ctx, cancel := context.WithCancel(context.Background())
 
 	config, err := loadConfig(ctx)
@@ -89,9 +95,13 @@ func main() {
 	slog.
 		Info("[main] configuration loaded")
 
-	hServer, notifier := app.New(config, goMetrics.NewDefaultRegistry(goMetrics.Config{
+	metricsRegistry := goMetrics.NewDefaultRegistry(goMetrics.Config{
 		Namespace: "sentry_notifier",
-	}))
+	})
+
+	metrics.NewAppInfo(metricsRegistry).SetInfo(version, "telegram,mattermost")
+
+	hServer, notifier := app.New(config, metricsRegistry)
 	controlServer := registerControl(config, hServer, handler.NewTestHandler(notifier))
 
 	wg := &sync.WaitGroup{}
