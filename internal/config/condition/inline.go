@@ -19,3 +19,7 @@ func (s *InlineString) UnmarshalYAML(n *yaml.Node) error {
 
 	return nil
 }
+
+func (s *InlineString) UnmarshalJSON(data []byte) error {
+
+}

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/artarts36/sentry-notifier/internal/messenger/contracts"
+	specw "github.com/artarts36/specw"
 	"io"
 	"log/slog"
 	"net"
@@ -24,7 +25,7 @@ type Messenger struct {
 }
 
 type Config struct {
-	URL urlWrapper `yaml:"url" json:"url"`
+	URL specw.URL `yaml:"url" json:"url"`
 }
 
 func NewMessenger(cfg Config) *Messenger {
