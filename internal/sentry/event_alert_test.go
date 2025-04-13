@@ -12,6 +12,6 @@ func TestEventAlert_extract(t *testing.T) {
 
 	al.extract()
 
-	assert.Equal(t, "test-org", al.Data.Extracted.OrganizationName)
-	assert.Equal(t, "front-end", al.Data.Extracted.ProjectName)
+	assert.Equal(t, "test-org", al.Data.Extracted.OrganizationSlug)
+	assert.Equal(t, "front-end", al.Data.Extracted.ProjectSlug)
 }

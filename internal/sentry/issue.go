@@ -30,6 +30,10 @@ type IssuePayload struct {
 	} `json:"data"`
 }
 
+func (p *IssuePayload) GetProjectSlug() string {
+	return p.Data.Issue.Project.Slug
+}
+
 func createIssuePayload(data []byte) (*IssuePayload, error) {
 	pl := new(IssuePayload)
 	err := json.Unmarshal(data, &pl)

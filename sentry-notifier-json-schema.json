@@ -203,6 +203,14 @@
     "trigger": {
       "type": "object",
       "properties": {
+        "when": {
+          "type": "object",
+          "properties": {
+            "project_name": {
+              "$ref": "#/definitions/condition-string"
+            }
+          }
+        },
         "message": {
           "type": "string",
           "description": "Template for message in Twig syntax"
@@ -216,6 +224,47 @@
         "message",
         "to"
       ]
+    },
+    "condition-string": {
+      "type": "object",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/condition-equals"
+        },
+        {
+          "$ref": "#/definitions/condition-starts"
+        },
+        {
+          "$ref": "#/definitions/condition-ends"
+        }
+      ]
+    },
+    "condition-equals": {
+      "type": "object",
+      "properties": {
+        "equals": {
+          "type": "string",
+          "description": "string must be equals value"
+        }
+      }
+    },
+    "condition-starts": {
+      "type": "object",
+      "properties": {
+        "starts": {
+          "type": "string",
+          "description": "string must be starts with value"
+        }
+      }
+    },
+    "condition-ends": {
+      "type": "object",
+      "properties": {
+        "ends": {
+          "type": "string",
+          "description": "string must be ends with value"
+        }
+      }
     }
   }
 }

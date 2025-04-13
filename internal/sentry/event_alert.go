@@ -30,8 +30,8 @@ type EventAlert struct {
 			} `json:"request"`
 		} `json:"event"`
 		Extracted struct {
-			ProjectName      string `json:"-"`
-			OrganizationName string `json:"-"`
+			ProjectSlug      string `json:"-"`
+			OrganizationSlug string `json:"-"`
 		} `json:"-"`
 	} `json:"data"`
 }
@@ -60,20 +60,24 @@ func (a *EventAlert) GetData() interface{} {
 	return a.Data
 }
 
+func (a *EventAlert) GetProjectSlug() string {
+	return a.Data.Extracted.ProjectSlug
+}
+
 func (a *EventAlert) extract() {
 	ur, err := url.Parse(a.Data.Event.URL)
 	if err != nil {
 		slog.
-			With(slog.String("err", err.Error())).
+			With(slog.Any("err", err)).
 			Warn("failed to parse url")
 	} else {
 		urParts := strings.Split(ur.Path, "/")
 		startIndex := slices.Index(urParts, "projects")
 		if startIndex >= 0 && startIndex+1 <= len(urParts) {
-			a.Data.Extracted.OrganizationName = urParts[startIndex+1]
+			a.Data.Extracted.OrganizationSlug = urParts[startIndex+1]
 
 			if startIndex+2 < len(urParts) {
-				a.Data.Extracted.ProjectName = urParts[startIndex+2]
+				a.Data.Extracted.ProjectSlug = urParts[startIndex+2]
 			}
 		}
 	}
@@ -95,8 +99,8 @@ func ExampleEventAlert() *EventAlert {
 	pl.Data.Event.WebURL = "https://sentry.io/api/0/projects/test-org/front-end/events/e4874d664c3540c1a32eab185f12c/"
 	pl.Data.Event.Request.Method = "GET"
 	pl.Data.Event.Request.URL = "/v1/users/"
-	pl.Data.Extracted.ProjectName = "TestProject"
-	pl.Data.Extracted.OrganizationName = "TestOrganization"
+
+	pl.extract()
 
 	return pl
 }

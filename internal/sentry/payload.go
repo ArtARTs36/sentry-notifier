@@ -8,6 +8,7 @@ type Payload interface {
 	GetID() string
 	GetHookResource() HookResource
 	GetData() interface{}
+	GetProjectSlug() string
 }
 
 func ParsePayload(resource HookResource, pl []byte) (Payload, error) {

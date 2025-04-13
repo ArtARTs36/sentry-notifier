@@ -22,13 +22,6 @@ type ImmediatelyNotifier struct {
 	metrics    *metrics.Messages
 }
 
-type Template struct {
-	Message string `yaml:"message" json:"message"`
-	To      string `yaml:"to" json:"to"`
-
-	MessageTemplateID string `yaml:"-" json:"-"`
-}
-
 type messengersMessage struct {
 	messengers  []messenger.Messenger
 	message     string
@@ -113,7 +106,18 @@ func (n *ImmediatelyNotifier) prepareMessages(
 
 	allMessagesCount := 0
 
-	for _, tmpl := range templates {
+	for i, tmpl := range templates {
+		if state, reason := tmpl.When.Check(payload); !state {
+			slog.DebugContext(
+				ctx,
+				"[notifier] skip template",
+				slog.Int("template_id", i),
+				slog.String("reason", reason),
+			)
+
+			continue
+		}
+
 		msgs, lErr := n.selectMessengers(tmpl.To)
 		if lErr != nil {
 			return nil, 0, fmt.Errorf("notifier: failed to select messengersMessages: %w", lErr)
