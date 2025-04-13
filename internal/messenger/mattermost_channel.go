@@ -68,7 +68,7 @@ func (m *Mattermost) findChannel(_ context.Context) (*model.Channel, error) {
 			find: func() (*model.Channel, *model.Response, error) {
 				ch, resp, err := m.client.GetChannelByNameForTeamName(m.cfg.Channel.Name, m.cfg.Channel.TeamName, "")
 				if err != nil {
-					return nil, resp, fmt.Errorf("find by name %q and team name %q: %w", m.cfg.Channel.Name, m.cfg.Channel.TeamName, err)
+					return nil, resp, fmt.Errorf("find by name %q and team name %q: %w", m.cfg.Channel.Name, m.cfg.Channel.TeamName, err) //nolint:lll // not need
 				}
 				return ch, resp, nil
 			},
@@ -86,28 +86,32 @@ func (m *Mattermost) findChannel(_ context.Context) (*model.Channel, error) {
 		}
 
 		if resp != nil {
-			switch resp.StatusCode {
-			case http.StatusInternalServerError:
-				return nil, errs.NewMessengerInternalError(err)
-			case http.StatusNotFound:
-				if strings.Contains(err.Error(), "Channel does not exist") {
-					return nil, errs.NewChatNotFoundError(err)
-				}
-
-				if strings.Contains(err.Error(), "Unable to find the existing team") {
-					return nil, errs.NewChatNotFoundErrorWithReason(err, "team_not_found")
-				}
-
-				return nil, errs.NewUnexpectedError(err)
-			case http.StatusUnauthorized:
-				return nil, errs.NewInvalidCredentialsError(err)
-			default:
-				return nil, errs.NewUnexpectedError(err)
-			}
+			return nil, m.mapChannelError(resp, err)
 		}
 
 		return nil, errs.NewNetworkError(err)
 	}
 
 	return nil, errors.New("channel misconfigured")
+}
+
+func (m *Mattermost) mapChannelError(resp *model.Response, err error) error {
+	switch resp.StatusCode {
+	case http.StatusInternalServerError:
+		return errs.NewMessengerInternalError(err)
+	case http.StatusNotFound:
+		if strings.Contains(err.Error(), "Channel does not exist") {
+			return errs.NewChatNotFoundError(err)
+		}
+
+		if strings.Contains(err.Error(), "Unable to find the existing team") {
+			return errs.NewChatNotFoundErrorWithReason(err, "team_not_found")
+		}
+
+		return errs.NewUnexpectedError(err)
+	case http.StatusUnauthorized:
+		return errs.NewInvalidCredentialsError(err)
+	default:
+		return errs.NewUnexpectedError(err)
+	}
 }
