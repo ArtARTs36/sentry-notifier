@@ -10,11 +10,12 @@ security:
 channels:
   my_team:
     mattermost:
-      - server: 'http://localhost:8065'
-        token: 'byncedkdmtbkmq4i7ossdtc6rw'
-        channel:
-          name: 'alerts'
-          team_name: 'test'
+      - api:
+          server: 'http://localhost:8065'
+          token: 'byncedkdmtbkmq4i7ossdtc6rw'
+          channel:
+            name: 'alerts'
+            team_name: 'test'
 
 notify:
   strategy: async

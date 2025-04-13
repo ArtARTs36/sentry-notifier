@@ -142,6 +142,20 @@
     },
     "mattermost": {
       "type": "object",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["api"],
+          "properties": {
+            "api": {
+              "$ref": "#/definitions/mattermost-api"
+            }
+          }
+        }
+      ]
+    },
+    "mattermost-api": {
+      "type": "object",
       "required": [
         "token",
         "server",

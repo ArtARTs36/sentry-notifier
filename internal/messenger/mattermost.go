@@ -8,12 +8,16 @@ import (
 )
 
 type Mattermost struct {
-	cfg     MattermostConfig
+	cfg     MattermostAPIConfig
 	client  *model.Client4
 	channel *model.Channel
 }
 
 type MattermostConfig struct {
+	API *MattermostAPIConfig `yaml:"api" json:"api"`
+}
+
+type MattermostAPIConfig struct {
 	Token  string `yaml:"token" json:"token"`
 	Server string `yaml:"server" json:"server"`
 
@@ -28,15 +32,19 @@ type MattermostConfig struct {
 }
 
 func (c *MattermostConfig) Validate() error {
-	if c.Channel.ID != "" {
+	if c.API == nil {
+		return errors.New("must be set api configuration")
+	}
+
+	if c.API.Channel.ID != "" {
 		return nil
 	}
 
-	if c.Channel.Name == "" {
+	if c.API.Channel.Name == "" {
 		return errors.New("must be set channel.id or channel.name")
 	}
 
-	if c.Channel.TeamID == "" && c.Channel.TeamName == "" {
+	if c.API.Channel.TeamID == "" && c.API.Channel.TeamName == "" {
 		return errors.New("when use channel name, must be set team_name or team_id")
 	}
 
@@ -44,11 +52,11 @@ func (c *MattermostConfig) Validate() error {
 }
 
 func NewMattermost(cfg MattermostConfig) *Mattermost {
-	client := model.NewAPIv4Client(cfg.Server)
-	client.SetToken(cfg.Token)
+	client := model.NewAPIv4Client(cfg.API.Server)
+	client.SetToken(cfg.API.Token)
 
 	m := &Mattermost{
-		cfg:    cfg,
+		cfg:    *cfg.API,
 		client: client,
 	}
 
