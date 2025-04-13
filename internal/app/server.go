@@ -92,6 +92,7 @@ func (s *Server) Health(ctx context.Context) *health.Check {
 
 		for _, m := range ms {
 			pingErr := m.Ping(ctx)
+			pingErrReason := reason(pingErr)
 			if pingErr != nil {
 				result.Status = false
 				slog.ErrorContext(
@@ -100,12 +101,13 @@ func (s *Server) Health(ctx context.Context) *health.Check {
 					slog.String("messenger", m.Name()),
 					slog.String("channel", channelName),
 					slog.Any("err", pingErr),
+					slog.String("err_reason", pingErrReason),
 				)
 			}
 
 			result.Channels[channelName][m.Name()] = append(result.Channels[channelName][m.Name()], health.CheckChannel{
 				Status: pingErr == nil,
-				Reason: reason(pingErr),
+				Reason: pingErrReason,
 			})
 		}
 	}

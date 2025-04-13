@@ -129,7 +129,6 @@
       },
       "required": [
         "chat_id",
-        "thread_id",
         "bot_token"
       ]
     },
