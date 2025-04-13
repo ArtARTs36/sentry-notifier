@@ -1,27 +1,9 @@
 package mattermostwh
 
 import (
-	"fmt"
-	"net/url"
-
-	"gopkg.in/yaml.v3"
+	"github.com/artarts36/specw"
 )
 
-type urlWrapper struct {
-	url.URL
-}
-
-func (w *urlWrapper) UnmarshalYAML(n *yaml.Node) error {
-	if n.Kind != yaml.ScalarNode {
-		return fmt.Errorf("must be a string, got %q", n.Kind)
-	}
-
-	value, err := url.Parse(n.Value)
-	if err != nil {
-		return fmt.Errorf("invalid url: %w", err)
-	}
-
-	w.URL = *value
-
-	return err
+type Config struct {
+	URL specw.URL `yaml:"url" json:"url"`
 }

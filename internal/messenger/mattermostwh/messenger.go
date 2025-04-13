@@ -12,8 +12,6 @@ import (
 	"net/http"
 	"time"
 
-	specw "github.com/artarts36/specw"
-
 	"github.com/artarts36/sentry-notifier/internal/messenger/contracts"
 	"github.com/artarts36/sentry-notifier/internal/messenger/errs"
 )
@@ -23,10 +21,6 @@ type Messenger struct {
 
 	host string
 	url  string
-}
-
-type Config struct {
-	URL specw.URL `yaml:"url" json:"url"`
 }
 
 func NewMessenger(cfg Config) *Messenger {

@@ -6,11 +6,13 @@ toolchain go1.23.8
 
 require (
 	github.com/artarts36/go-metrics v0.1.0
+	github.com/artarts36/specw v0.0.0-20250413190300-337b410e5986
+	github.com/google/uuid v1.6.0
 	github.com/mattermost/mattermost-server/v6 v6.7.2
 	github.com/prometheus/client_golang v1.20.3
 	github.com/samber/slog-http v1.3.1
 	github.com/slok/go-http-metrics v0.13.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/tyler-sommer/stick v1.0.6
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -24,7 +26,6 @@ require (
 	github.com/dyatlov/go-opengraph v0.0.0-20210112100619-dae8665a5b09 // indirect
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.3 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/graph-gophers/graphql-go v1.3.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect

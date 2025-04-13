@@ -39,7 +39,7 @@ notify:
   on:
     event_alert:
       - message: |
-          🚨 Error on {{ hook.Extracted.OrganizationName }}/{{ hook.Extracted.ProjectName }}
+          🚨 Error on {{ hook.Extracted.OrganizationName }}/{{ hook.Extracted.ProjectSlug }}
 
           at {{ hook.Event.Datetime.Human() }}
 
