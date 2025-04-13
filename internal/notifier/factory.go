@@ -1,7 +1,7 @@
 package notifier
 
 import (
-	"github.com/artarts36/sentry-notifier/internal/messenger"
+	messenger "github.com/artarts36/sentry-notifier/internal/messenger/contracts"
 	"github.com/artarts36/sentry-notifier/internal/metrics"
 	"github.com/artarts36/sentry-notifier/internal/template"
 )

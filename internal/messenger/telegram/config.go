@@ -1,4 +1,4 @@
-package messenger
+package telegram
 
 import (
 	"errors"
@@ -6,14 +6,14 @@ import (
 
 const defaultTelegramHost = "api.telegram.org"
 
-type TelegramConfig struct {
+type Config struct {
 	Host     string `yaml:"host" json:"host"`
 	BotToken string `yaml:"bot_token" json:"bot_token"`
 	ChatID   string `yaml:"chat_id" json:"chat_id"`
 	ThreadID string `yaml:"thread_id,omitempty" json:"thread_id"`
 }
 
-func (c *TelegramConfig) Validate() error {
+func (c *Config) Validate() error {
 	if c.Host == "" {
 		c.Host = defaultTelegramHost
 	}

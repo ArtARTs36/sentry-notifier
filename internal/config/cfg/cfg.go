@@ -2,8 +2,10 @@ package cfg
 
 import (
 	"fmt"
+	"github.com/artarts36/sentry-notifier/internal/messenger/mattermostwh"
 
-	"github.com/artarts36/sentry-notifier/internal/messenger"
+	"github.com/artarts36/sentry-notifier/internal/messenger/mattermostapi"
+	"github.com/artarts36/sentry-notifier/internal/messenger/telegram"
 	"github.com/artarts36/sentry-notifier/internal/notifier"
 	"github.com/artarts36/sentry-notifier/internal/security"
 )
@@ -29,14 +31,15 @@ type Config struct {
 }
 
 type Channel struct {
-	Telegram   []*messenger.TelegramConfig   `yaml:"telegram,omitempty" json:"telegram,omitempty"`
-	Mattermost []*messenger.MattermostConfig `yaml:"mattermost,omitempty" json:"mattermost,omitempty"`
+	Telegram          []*telegram.Config      `yaml:"telegram,omitempty" json:"telegram,omitempty"`
+	MattermostAPI     []*mattermostapi.Config `yaml:"mattermost_api,omitempty" json:"mattermost_api,omitempty"`
+	MattermostWebhook []*mattermostwh.Config  `yaml:"mattermost_webhook,omitempty" json:"mattermost_webhook,omitempty"`
 }
 
 func (c *Channel) Validate() error {
-	for i, mm := range c.Mattermost {
+	for i, mm := range c.MattermostAPI {
 		if err := mm.Validate(); err != nil {
-			return fmt.Errorf("mattermost[%d]: %w", i, err)
+			return fmt.Errorf("mattermost_api[%d]: %w", i, err)
 		}
 	}
 

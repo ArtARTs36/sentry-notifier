@@ -34,14 +34,14 @@ func (e *Env) Inject(config cfg.Config) (cfg.Config, error) { //nolint:gocognit 
 			}
 		}
 
-		for _, mm := range channel.Mattermost {
-			if mm.API != nil {
+		for _, mm := range channel.MattermostAPI {
+			if mm != nil {
 				var err error
-				mm.API.Server, err = e.transform(mm.API.Server)
+				mm.Server, err = e.transform(mm.Server)
 				if err != nil {
 					return cfg.Config{}, err
 				}
-				mm.API.Token, err = e.transform(mm.API.Token)
+				mm.Token, err = e.transform(mm.Token)
 				if err != nil {
 					return cfg.Config{}, err
 				}

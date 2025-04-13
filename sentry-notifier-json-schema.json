@@ -106,10 +106,16 @@
             "$ref": "#/definitions/telegram"
           }
         },
-        "mattermost": {
+        "mattermost_api": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/mattermost"
+            "$ref": "#/definitions/mattermost-api"
+          }
+        },
+        "mattermost_webhook": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mattermost-webhook"
           }
         }
       }
@@ -140,20 +146,6 @@
         "bot_token"
       ]
     },
-    "mattermost": {
-      "type": "object",
-      "oneOf": [
-        {
-          "type": "object",
-          "required": ["api"],
-          "properties": {
-            "api": {
-              "$ref": "#/definitions/mattermost-api"
-            }
-          }
-        }
-      ]
-    },
     "mattermost-api": {
       "type": "object",
       "required": [
@@ -180,7 +172,8 @@
                   "type": "string",
                   "description": "id of mattermost channel"
                 }
-              }
+              },
+              "additionalProperties": false
             },
             {
               "type": "object",
@@ -194,7 +187,8 @@
                   "type": "string",
                   "description": "id of mattermost team"
                 }
-              }
+              },
+              "additionalProperties": false
             },
             {
               "type": "object",
@@ -208,11 +202,26 @@
                   "type": "string",
                   "description": "name of mattermost team"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           ]
-        }
+        },
+        "additionalProperties": false,
       }
+    },
+    "mattermost-webhook": {
+      "type": "object",
+      "required": [
+        "url"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL to Mattermost incoming webhook"
+        }
+      },
+      "additionalProperties": false
     },
     "trigger": {
       "type": "object",

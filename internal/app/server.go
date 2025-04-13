@@ -6,7 +6,7 @@ import (
 	goMetrics "github.com/artarts36/go-metrics"
 	"github.com/artarts36/sentry-notifier/internal/handler"
 	"github.com/artarts36/sentry-notifier/internal/health"
-	"github.com/artarts36/sentry-notifier/internal/messenger"
+	"github.com/artarts36/sentry-notifier/internal/messenger/contracts"
 	messengererrors "github.com/artarts36/sentry-notifier/internal/messenger/errs"
 	"github.com/artarts36/sentry-notifier/internal/metrics"
 	"github.com/artarts36/sentry-notifier/internal/notifier"
@@ -28,7 +28,7 @@ type Server struct {
 
 	notifier notifier.Notifier
 
-	messengers map[string][]messenger.Messenger
+	messengers map[string][]contracts.Messenger
 }
 
 func New(config cfg.Config, metricsRegistry goMetrics.Registry) (*Server, notifier.Notifier) {

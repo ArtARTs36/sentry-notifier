@@ -9,13 +9,15 @@ security:
 
 channels:
   my_team:
-    mattermost:
-      - api:
-          server: 'http://localhost:8065'
-          token: 'byncedkdmtbkmq4i7ossdtc6rw'
-          channel:
-            name: 'alerts'
-            team_name: 'test'
+    mattermost_api:
+      - server: 'http://localhost:8065'
+        token: 'byncedkdmtbkmq4i7ossdtc6rw'
+        channel:
+          name: 'alerts'
+          team_name: 'test'
+
+    mattermost_webhook:
+      - url: 'http://localhost:8065/hooks/x4c7wex9t7fpzboe4y5jxkh4ur'
 
 notify:
   strategy: async

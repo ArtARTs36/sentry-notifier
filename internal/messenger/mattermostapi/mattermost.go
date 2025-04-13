@@ -1,23 +1,20 @@
-package messenger
+package mattermostapi
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/artarts36/sentry-notifier/internal/messenger/contracts"
 	"github.com/mattermost/mattermost-server/v6/model"
 )
 
 type Mattermost struct {
-	cfg     MattermostAPIConfig
+	cfg     Config
 	client  *model.Client4
 	channel *model.Channel
 }
 
-type MattermostConfig struct {
-	API *MattermostAPIConfig `yaml:"api" json:"api"`
-}
-
-type MattermostAPIConfig struct {
+type Config struct {
 	Token  string `yaml:"token" json:"token"`
 	Server string `yaml:"server" json:"server"`
 
@@ -31,32 +28,28 @@ type MattermostAPIConfig struct {
 	} `yaml:"channel" json:"channel"`
 }
 
-func (c *MattermostConfig) Validate() error {
-	if c.API == nil {
-		return errors.New("must be set api configuration")
-	}
-
-	if c.API.Channel.ID != "" {
+func (c *Config) Validate() error {
+	if c.Channel.ID != "" {
 		return nil
 	}
 
-	if c.API.Channel.Name == "" {
+	if c.Channel.Name == "" {
 		return errors.New("must be set channel.id or channel.name")
 	}
 
-	if c.API.Channel.TeamID == "" && c.API.Channel.TeamName == "" {
+	if c.Channel.TeamID == "" && c.Channel.TeamName == "" {
 		return errors.New("when use channel name, must be set team_name or team_id")
 	}
 
 	return nil
 }
 
-func NewMattermost(cfg MattermostConfig) *Mattermost {
-	client := model.NewAPIv4Client(cfg.API.Server)
-	client.SetToken(cfg.API.Token)
+func NewMessenger(cfg Config) *Mattermost {
+	client := model.NewAPIv4Client(cfg.Server)
+	client.SetToken(cfg.Token)
 
 	m := &Mattermost{
-		cfg:    *cfg.API,
+		cfg:    cfg,
 		client: client,
 	}
 
@@ -72,10 +65,10 @@ func (m *Mattermost) Ping(ctx context.Context) error {
 }
 
 func (m *Mattermost) Name() string {
-	return "mattermost"
+	return "mattermost_api"
 }
 
-func (m *Mattermost) Send(ctx context.Context, message Message) error {
+func (m *Mattermost) Send(ctx context.Context, message contracts.Message) error {
 	err := m.retrieveChannel(ctx)
 	if err != nil {
 		return fmt.Errorf("retrieve channel: %w", err)

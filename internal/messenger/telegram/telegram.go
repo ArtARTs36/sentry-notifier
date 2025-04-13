@@ -1,10 +1,11 @@
-package messenger
+package telegram
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/artarts36/sentry-notifier/internal/messenger/contracts"
 	"github.com/artarts36/sentry-notifier/internal/messenger/errs"
 	"io"
 	"log/slog"
@@ -13,7 +14,7 @@ import (
 )
 
 type Telegram struct {
-	cfg TelegramConfig
+	cfg Config
 }
 
 type telegramRequest struct {
@@ -29,7 +30,7 @@ type telegramErrorResponse struct {
 	Description string `json:"description"`
 }
 
-func NewTelegram(cfg TelegramConfig) *Telegram {
+func NewTelegram(cfg Config) *Telegram {
 	return &Telegram{
 		cfg: cfg,
 	}
@@ -43,7 +44,7 @@ func (t *Telegram) Ping(ctx context.Context) error {
 	return t.getChat(ctx)
 }
 
-func (t *Telegram) Send(ctx context.Context, message Message) error {
+func (t *Telegram) Send(ctx context.Context, message contracts.Message) error {
 	msgBody := strings.ReplaceAll(message.Body, "-", "\\-")
 	msgBody = strings.ReplaceAll(msgBody, ".", "\\.")
 
@@ -67,7 +68,7 @@ func (t *Telegram) Send(ctx context.Context, message Message) error {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to send message: %w", err)
+		return fmt.Errorf("send request: %w", err)
 	}
 
 	defer func() {
