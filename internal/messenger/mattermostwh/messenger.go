@@ -14,8 +14,8 @@ import (
 
 	specw "github.com/artarts36/specw"
 
-	"github.com/artarts36/sentry-notifier/internal/messenger/errs"
 	"github.com/artarts36/sentry-notifier/internal/messenger/contracts"
+	"github.com/artarts36/sentry-notifier/internal/messenger/errs"
 )
 
 type Messenger struct {
