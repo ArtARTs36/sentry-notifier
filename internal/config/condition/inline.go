@@ -1,7 +1,9 @@
 package condition
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -21,5 +23,13 @@ func (s *InlineString) UnmarshalYAML(n *yaml.Node) error {
 }
 
 func (s *InlineString) UnmarshalJSON(data []byte) error {
+	v := string(data)
 
+	if !strings.HasPrefix(v, "\"") || !strings.HasSuffix(v, "\"") {
+		return errors.New("expected string")
+	}
+
+	s.value = strings.Trim(v, "\"")
+
+	return nil
 }

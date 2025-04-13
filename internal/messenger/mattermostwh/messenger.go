@@ -6,15 +6,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/artarts36/sentry-notifier/internal/messenger/contracts"
-	specw "github.com/artarts36/specw"
 	"io"
 	"log/slog"
 	"net"
 	"net/http"
 	"time"
 
+	specw "github.com/artarts36/specw"
+
 	"github.com/artarts36/sentry-notifier/internal/messenger/errs"
+	"github.com/artarts36/sentry-notifier/internal/messenger/contracts"
 )
 
 type Messenger struct {
