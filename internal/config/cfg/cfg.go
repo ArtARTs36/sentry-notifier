@@ -40,13 +40,19 @@ func (c *Channel) Validate() error {
 		}
 	}
 
+	for i, tg := range c.Telegram {
+		if err := tg.Validate(); err != nil {
+			return fmt.Errorf("telegram[%d]: %w", i, err)
+		}
+	}
+
 	return nil
 }
 
 func (c *Config) Validate() error {
 	for channelName, channel := range c.Channels {
 		if err := channel.Validate(); err != nil {
-			return fmt.Errorf("channel %q: %w", channelName, err)
+			return fmt.Errorf("channel[%q]: %w", channelName, err)
 		}
 	}
 

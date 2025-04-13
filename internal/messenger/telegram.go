@@ -12,17 +12,8 @@ import (
 	"strings"
 )
 
-const defaultTelegramHost = "api.telegram.org"
-
 type Telegram struct {
 	cfg TelegramConfig
-}
-
-type TelegramConfig struct {
-	Host     string `yaml:"host" json:"host"`
-	BotToken string `yaml:"bot_token" json:"bot_token"`
-	ChatID   string `yaml:"chat_id" json:"chat_id"`
-	ThreadID string `yaml:"thread_id,omitempty" json:"thread_id"`
 }
 
 type telegramRequest struct {
@@ -39,10 +30,6 @@ type telegramErrorResponse struct {
 }
 
 func NewTelegram(cfg TelegramConfig) *Telegram {
-	if cfg.Host == "" {
-		cfg.Host = defaultTelegramHost
-	}
-
 	return &Telegram{
 		cfg: cfg,
 	}
