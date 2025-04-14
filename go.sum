@@ -145,6 +145,14 @@ github.com/artarts36/go-metrics v0.1.0 h1:6hqLhTHk/i35nhJB87qjdGn5kH6EchZiac2ezY
 github.com/artarts36/go-metrics v0.1.0/go.mod h1:BpddSZnIN9udwDyRMgkmPfm0LG+2l8bY7dig4B1t8jc=
 github.com/artarts36/specw v0.0.0-20250413190300-337b410e5986 h1:rDun4RUf3fXA2BSzWGA1nHnQxk9r3qTJJR5Lkmtxb7Y=
 github.com/artarts36/specw v0.0.0-20250413190300-337b410e5986/go.mod h1:yh/Htv/v+iYqAUoMO8Epx1W89yK/E1v36doIPlWPyus=
+github.com/artarts36/specw v0.0.0-20250413222016-26b9593a04f0 h1:PX7LWfUWJ9+FybI7I+euTKqvrY2A9hqKQ52xFxkU6Oo=
+github.com/artarts36/specw v0.0.0-20250413222016-26b9593a04f0/go.mod h1:j5hzwmVa9rLXLCd2Fq0RaNbadlzSi1wPsGvAAJzALKw=
+github.com/artarts36/specw v0.0.0-20250413223901-67d5ce4a0a7c h1:zehAtIladMe39boay5MAbAxzawLPNjyN3Wl7Ah7UkoI=
+github.com/artarts36/specw v0.0.0-20250413223901-67d5ce4a0a7c/go.mod h1:j5hzwmVa9rLXLCd2Fq0RaNbadlzSi1wPsGvAAJzALKw=
+github.com/artarts36/specw v0.0.0-20250413233644-6b9e36336f5b h1:O5iQBqSS5Vgd2Ax+MACqOWbPC2J5blSLQGfUA4GtrME=
+github.com/artarts36/specw v0.0.0-20250413233644-6b9e36336f5b/go.mod h1:j5hzwmVa9rLXLCd2Fq0RaNbadlzSi1wPsGvAAJzALKw=
+github.com/artarts36/specw v0.0.0-20250413235338-f9e139fcce0a h1:iAz7xhn6PbJ7SocxZO00HPWPV355XW/P9P0+HeASHrg=
+github.com/artarts36/specw v0.0.0-20250413235338-f9e139fcce0a/go.mod h1:j5hzwmVa9rLXLCd2Fq0RaNbadlzSi1wPsGvAAJzALKw=
 github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a/go.mod h1:lB+ZfQJz7igIIfQNfa7Ml4HSf2uFQQRzpGGRXenZAgY=
 github.com/avct/uasurfer v0.0.0-20191028135549-26b5daa857f1/go.mod h1:noBAuukeYOXa0aXGqxr24tADqkwDO2KRD15FsuaZ5a8=
 github.com/aws/aws-sdk-go v1.15.11/go.mod h1:mFuSZ37Z9YOHbQEwBWztmVzqXrEkub65tZoCYDt7FT0=

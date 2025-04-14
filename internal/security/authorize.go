@@ -5,13 +5,14 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"github.com/artarts36/specw"
 	"io"
 	"log/slog"
 	"net/http"
 )
 
 type Config struct {
-	ClientToken string `yaml:"client_secret" json:"client_secret"`
+	ClientToken specw.Env[string] `yaml:"client_secret" json:"client_secret"`
 }
 
 func AuthorizeRequest(next http.Handler, cfg Config) http.Handler {
@@ -33,7 +34,7 @@ func AuthorizeRequest(next http.Handler, cfg Config) http.Handler {
 			return
 		}
 
-		if cfg.ClientToken != "" {
+		if cfg.ClientToken.Value != "" {
 			body, err := io.ReadAll(request.Body)
 			if err != nil {
 				slog.WarnContext(request.Context(), "[security] failed to read request body")
@@ -41,7 +42,7 @@ func AuthorizeRequest(next http.Handler, cfg Config) http.Handler {
 				return
 			}
 
-			digest := hmac.New(sha256.New, []byte(cfg.ClientToken))
+			digest := hmac.New(sha256.New, []byte(cfg.ClientToken.Value))
 
 			_, err = digest.Write(body)
 			if err != nil {

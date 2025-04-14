@@ -6,7 +6,7 @@ toolchain go1.23.8
 
 require (
 	github.com/artarts36/go-metrics v0.1.0
-	github.com/artarts36/specw v0.0.0-20250413190300-337b410e5986
+	github.com/artarts36/specw v0.0.0-20250413235338-f9e139fcce0a
 	github.com/google/uuid v1.6.0
 	github.com/mattermost/mattermost-server/v6 v6.7.2
 	github.com/prometheus/client_golang v1.20.3

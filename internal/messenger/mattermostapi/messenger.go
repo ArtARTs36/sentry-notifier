@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/artarts36/sentry-notifier/internal/messenger/contracts"
+	"github.com/artarts36/specw"
 	"github.com/mattermost/mattermost-server/v6/model"
 )
 
@@ -15,29 +16,29 @@ type Mattermost struct {
 }
 
 type Config struct {
-	Token  string `yaml:"token" json:"token"`
-	Server string `yaml:"server" json:"server"`
+	Token  specw.Env[string] `yaml:"token" json:"token"`
+	Server specw.Env[string] `yaml:"server" json:"server"`
 
 	Channel struct {
-		ID string `yaml:"id" json:"channel_id"` // one of
+		ID specw.Env[string] `yaml:"id" json:"channel_id"` // one of
 
-		Name string `yaml:"name" json:"channel_name"`
+		Name specw.Env[string] `yaml:"name" json:"channel_name"`
 
-		TeamName string `yaml:"team_name" json:"team"`
-		TeamID   string `yaml:"team_id" json:"team_id"`
+		TeamName specw.Env[string] `yaml:"team_name" json:"team"`
+		TeamID   specw.Env[string] `yaml:"team_id" json:"team_id"`
 	} `yaml:"channel" json:"channel"`
 }
 
 func (c *Config) Validate() error {
-	if c.Channel.ID != "" {
+	if c.Channel.ID.Value != "" {
 		return nil
 	}
 
-	if c.Channel.Name == "" {
+	if c.Channel.Name.Value == "" {
 		return errors.New("must be set channel.id or channel.name")
 	}
 
-	if c.Channel.TeamID == "" && c.Channel.TeamName == "" {
+	if c.Channel.TeamID.Value == "" && c.Channel.TeamName.Value == "" {
 		return errors.New("when use channel name, must be set team_name or team_id")
 	}
 
@@ -45,8 +46,8 @@ func (c *Config) Validate() error {
 }
 
 func NewMessenger(cfg Config) *Mattermost {
-	client := model.NewAPIv4Client(cfg.Server)
-	client.SetToken(cfg.Token)
+	client := model.NewAPIv4Client(cfg.Server.Value)
+	client.SetToken(cfg.Token.Value)
 
 	m := &Mattermost{
 		cfg:    cfg,

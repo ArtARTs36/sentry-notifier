@@ -5,5 +5,5 @@ import (
 )
 
 type Config struct {
-	URL specw.URL `yaml:"url" json:"url"`
+	URL specw.Env[specw.URL] `yaml:"url" json:"url"`
 }

@@ -26,8 +26,8 @@ type Messenger struct {
 func NewMessenger(cfg Config) *Messenger {
 	return &Messenger{
 		cfg:  cfg,
-		host: fmt.Sprintf("%s//%s", cfg.URL.Scheme, cfg.URL.Host),
-		url:  cfg.URL.String(),
+		host: fmt.Sprintf("%s//%s", cfg.URL.Value.Value.Scheme, cfg.URL.Value.Value.Host),
+		url:  cfg.URL.Value.String(),
 	}
 }
 

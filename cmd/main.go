@@ -78,7 +78,7 @@ func loadConfig(ctx context.Context) (cfg.Config, error) {
 }
 
 func main() {
-	setupLogger("debug")
+	setupLogger(slog.LevelDebug)
 
 	slog.Debug("running sentry-notifier", slog.String("version", version))
 
@@ -90,7 +90,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	setupLogger(config.Log.Level)
+	slog.DebugContext(ctx, "[main] setup log level", slog.String("level", config.Log.Level.String()))
+	setupLogger(config.Log.Level.Level())
 
 	slog.
 		Info("[main] configuration loaded")
@@ -165,31 +166,15 @@ func newLoader(store storage.Storage) *loader.Loader {
 		store,
 		parser.NewResolver(),
 		injector.NewComposite([]injector.Injector{
-			injector.NewEnv(),
 			injector.NewTemplateID(),
 			injector.NewNotifyDefaultStrategy(),
 		}),
 	)
 }
 
-func setupLogger(lvl string) {
-	level := slog.LevelDebug
-
-	switch lvl {
-	case "info":
-		level = slog.LevelInfo
-	case "warning":
-	case "warn":
-		level = slog.LevelWarn
-	case "error":
-	case "err":
-		level = slog.LevelError
-	default:
-		level = slog.LevelDebug
-	}
-
+func setupLogger(lvl slog.Level) {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: level,
+		Level: lvl,
 	}))
 
 	slog.SetDefault(logger)

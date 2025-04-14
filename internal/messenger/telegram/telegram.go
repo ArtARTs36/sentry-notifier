@@ -49,8 +49,8 @@ func (t *Telegram) Send(ctx context.Context, message contracts.Message) error {
 	msgBody = strings.ReplaceAll(msgBody, ".", "\\.")
 
 	payload, err := json.Marshal(&telegramRequest{
-		ChatID:          t.cfg.ChatID,
-		MessageThreadID: t.cfg.ThreadID,
+		ChatID:          t.cfg.ChatID.Value,
+		MessageThreadID: t.cfg.ThreadID.Value,
 		Text:            msgBody,
 		ParseMode:       "MarkdownV2",
 	})

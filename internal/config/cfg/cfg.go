@@ -3,6 +3,7 @@ package cfg
 import (
 	"fmt"
 	"github.com/artarts36/sentry-notifier/internal/messenger/mattermostwh"
+	"github.com/artarts36/specw"
 
 	"github.com/artarts36/sentry-notifier/internal/messenger/mattermostapi"
 	"github.com/artarts36/sentry-notifier/internal/messenger/telegram"
@@ -20,7 +21,7 @@ type Config struct {
 	} `yaml:"control" json:"control"`
 
 	Log struct {
-		Level string `yaml:"level" json:"level"`
+		Level specw.SlogLevel `yaml:"level" json:"level"`
 	} `yaml:"log" json:"log"`
 
 	Security security.Config `yaml:"security" json:"security"`

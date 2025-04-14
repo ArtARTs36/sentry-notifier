@@ -37,15 +37,15 @@ func (m *Mattermost) findChannel(_ context.Context) (*model.Channel, error) {
 
 	finders := []finder{
 		{
-			condition: m.cfg.Channel.ID == "" && m.cfg.Channel.Name == "",
+			condition: m.cfg.Channel.ID.Value == "" && m.cfg.Channel.Name.Value == "",
 			find: func() (*model.Channel, *model.Response, error) {
 				return nil, nil, errors.New("must be set channel.id or channel.name")
 			},
 		},
 		{
-			condition: m.cfg.Channel.ID != "",
+			condition: m.cfg.Channel.ID.Value != "",
 			find: func() (*model.Channel, *model.Response, error) {
-				ch, resp, err := m.client.GetChannel(m.cfg.Channel.ID, "")
+				ch, resp, err := m.client.GetChannel(m.cfg.Channel.ID.Value, "")
 				if err != nil {
 					return nil, resp, fmt.Errorf("find by id %q: %w", m.cfg.Channel.ID, err)
 				}
@@ -54,9 +54,9 @@ func (m *Mattermost) findChannel(_ context.Context) (*model.Channel, error) {
 			},
 		},
 		{
-			condition: m.cfg.Channel.TeamID != "",
+			condition: m.cfg.Channel.TeamID.Value != "",
 			find: func() (*model.Channel, *model.Response, error) {
-				ch, resp, err := m.client.GetChannelByName(m.cfg.Channel.Name, m.cfg.Channel.TeamID, "")
+				ch, resp, err := m.client.GetChannelByName(m.cfg.Channel.Name.Value, m.cfg.Channel.TeamID.Value, "")
 				if err != nil {
 					return nil, resp, fmt.Errorf("find by name %q and team id %q: %w", m.cfg.Channel.Name, m.cfg.Channel.TeamID, err)
 				}
@@ -64,12 +64,17 @@ func (m *Mattermost) findChannel(_ context.Context) (*model.Channel, error) {
 			},
 		},
 		{
-			condition: m.cfg.Channel.TeamName != "",
+			condition: m.cfg.Channel.TeamName.Value != "",
 			find: func() (*model.Channel, *model.Response, error) {
-				ch, resp, err := m.client.GetChannelByNameForTeamName(m.cfg.Channel.Name, m.cfg.Channel.TeamName, "")
+				ch, resp, err := m.client.GetChannelByNameForTeamName(
+					m.cfg.Channel.Name.Value,
+					m.cfg.Channel.TeamName.Value,
+					"",
+				)
 				if err != nil {
 					return nil, resp, fmt.Errorf("find by name %q and team name %q: %w", m.cfg.Channel.Name, m.cfg.Channel.TeamName, err) //nolint:lll // not need
 				}
+
 				return ch, resp, nil
 			},
 		},
