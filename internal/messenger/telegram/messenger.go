@@ -45,8 +45,7 @@ func (t *Telegram) Ping(ctx context.Context) error {
 }
 
 func (t *Telegram) Send(ctx context.Context, message contracts.Message) error {
-	msgBody := strings.ReplaceAll(message.Body, "-", "\\-")
-	msgBody = strings.ReplaceAll(msgBody, ".", "\\.")
+	msgBody := t.prepareBody(message)
 
 	payload, err := json.Marshal(&telegramRequest{
 		ChatID:          t.cfg.ChatID.Value,
