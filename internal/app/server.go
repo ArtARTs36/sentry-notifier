@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"errors"
+	"fmt"
 	goMetrics "github.com/artarts36/go-metrics"
 	"github.com/artarts36/sentry-notifier/internal/handler"
 	"github.com/artarts36/sentry-notifier/internal/health"
@@ -68,10 +69,10 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	return err
 }
 
-func (s *Server) Health(ctx context.Context) *health.Check {
-	result := &health.Check{
-		Status:   true,
-		Channels: map[string]map[string][]health.CheckChannel{},
+func (s *Server) Health(ctx context.Context) *health.CheckResponse {
+	result := &health.CheckResponse{
+		Status: true,
+		Checks: make([]health.Check, 0),
 	}
 
 	reason := func(err error) string {
@@ -88,9 +89,7 @@ func (s *Server) Health(ctx context.Context) *health.Check {
 	}
 
 	for channelName, ms := range s.messengers {
-		result.Channels[channelName] = map[string][]health.CheckChannel{}
-
-		for _, m := range ms {
+		for i, m := range ms {
 			pingErr := m.Ping(ctx)
 			pingErrReason := reason(pingErr)
 			if pingErr != nil {
@@ -105,7 +104,8 @@ func (s *Server) Health(ctx context.Context) *health.Check {
 				)
 			}
 
-			result.Channels[channelName][m.Name()] = append(result.Channels[channelName][m.Name()], health.CheckChannel{
+			result.Checks = append(result.Checks, health.Check{
+				ID:     fmt.Sprintf("%s-%s-%d", channelName, m.Name(), i),
 				Status: pingErr == nil,
 				Reason: pingErrReason,
 			})

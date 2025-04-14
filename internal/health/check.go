@@ -1,12 +1,13 @@
 package health
 
-type Check struct {
+type CheckResponse struct {
 	Status bool `json:"status"`
 
-	Channels map[string]map[string][]CheckChannel `json:"channels"`
+	Checks []Check `json:"checks"`
 }
 
-type CheckChannel struct {
+type Check struct {
+	ID     string `json:"id"`
 	Status bool   `json:"status"`
 	Reason string `json:"reason,omitempty"`
 }

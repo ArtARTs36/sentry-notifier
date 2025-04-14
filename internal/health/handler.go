@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func Handler(checker func(ctx context.Context) *Check) http.HandlerFunc {
+func Handler(checker func(ctx context.Context) *CheckResponse) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 

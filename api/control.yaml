@@ -9,6 +9,7 @@ info:
 paths:
   /test:
     get:
+      summary: Отправить тестовое уведомление
       operationId: SendTestNotification
       parameters:
         - {$ref: '#/components/parameters/event-type-query'}
@@ -17,6 +18,7 @@ paths:
 
   /health:
     get:
+      summary: Получить информацию о состоянии сервиса
       operationId: HealthCheck
       responses:
         200: {$ref: '#/components/responses/health-check-response'}
@@ -24,6 +26,7 @@ paths:
 
   /metrics:
     get:
+      summary: Получить метрики сервиса
       operationId: GetMetrics
       responses:
         default: {$ref: '#/components/responses/get-metrics-response'}
@@ -52,24 +55,24 @@ components:
           type: boolean
           description: 'Статус проверки всех каналов'
           example: true
-        channels:
-          type: object
-          additionalProperties:
+        checks:
+          type: array
+          items:
             type: object
-            additionalProperties:
-              type: array
-              items:
-                type: object
-                required: [status]
-                properties:
-                  status:
-                    type: boolean
-                    description: 'Статус проверки канала'
-                    example: true
-                  reason:
-                    type: string
-                    description: 'Описание ошибки'
-                    example: 'chat_not_found'
+            required: [status]
+            properties:
+              id:
+                type: string
+                description: 'Идентификатор проверяемого объекта'
+                example: 'my_team-mattermost_api-0'
+              status:
+                type: boolean
+                description: 'Статус проверки канала'
+                example: true
+              reason:
+                type: string
+                description: 'Описание ошибки'
+                example: 'chat_not_found'
 
   responses:
     get-metrics-response:
