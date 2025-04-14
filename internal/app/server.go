@@ -105,7 +105,7 @@ func (s *Server) Health(ctx context.Context) *health.CheckResponse {
 			}
 
 			result.Checks = append(result.Checks, health.Check{
-				ID:     fmt.Sprintf("%s-%s-%d", channelName, m.Name(), i),
+				ID:     fmt.Sprintf("%s:%s:%d", channelName, m.Name(), i),
 				Status: pingErr == nil,
 				Reason: pingErrReason,
 			})

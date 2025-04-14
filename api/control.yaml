@@ -64,7 +64,7 @@ components:
               id:
                 type: string
                 description: 'Идентификатор проверяемого объекта'
-                example: 'my_team-mattermost_api-0'
+                example: 'my_team:mattermost_api:0'
               status:
                 type: boolean
                 description: 'Статус проверки канала'
