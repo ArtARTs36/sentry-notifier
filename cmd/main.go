@@ -34,7 +34,10 @@ var configCandidates = []string{
 	"sentry-notifier.json",
 }
 
-var version = "v1.0.0"
+var (
+	Version   = "v1.0.0"
+	BuildTime = "now"
+)
 
 func resolveConfigPath(store storage.Storage) (string, error) {
 	for _, candidate := range configCandidates {
@@ -80,7 +83,7 @@ func loadConfig(ctx context.Context) (cfg.Config, error) {
 func main() {
 	setupLogger(slog.LevelDebug)
 
-	slog.Debug("running sentry-notifier", slog.String("version", version))
+	slog.Debug("running sentry-notifier", slog.String("version", Version), slog.String("build_time", BuildTime))
 
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -100,7 +103,7 @@ func main() {
 		Namespace: "sentry_notifier",
 	})
 
-	metrics.NewAppInfo(metricsRegistry).SetInfo(version, "telegram,mattermost")
+	metrics.NewAppInfo(metricsRegistry).SetInfo(Version, BuildTime, "telegram,mattermost")
 
 	hServer, notifier := app.New(config, metricsRegistry)
 	controlServer := registerControl(config, hServer, handler.NewTestHandler(notifier))

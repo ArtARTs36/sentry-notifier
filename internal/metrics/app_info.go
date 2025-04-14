@@ -15,10 +15,10 @@ func NewAppInfo(registry goMetrics.Registry) *AppInfo {
 		info: registry.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "app_info",
 			Help: "App info",
-		}, []string{"version", "supported_messengers"}),
+		}, []string{"version", "build_time", "supported_messengers"}),
 	}
 }
 
-func (i *AppInfo) SetInfo(version string, supportedMessengerss string) {
-	i.info.WithLabelValues(version, supportedMessengerss)
+func (i *AppInfo) SetInfo(version string, buildTime string, supportedMessengers string) {
+	i.info.WithLabelValues(version, buildTime, supportedMessengers)
 }

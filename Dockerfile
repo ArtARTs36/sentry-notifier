@@ -12,7 +12,7 @@ RUN go mod download
 
 COPY . .
 
-RUN GOOS=linux go build -ldflags="-s -w" -o /go/bin/sentry-notifier /go/src/github.com/artarts36/sentry-notifier/cmd/main.go
+RUN GOOS=linux go build -ldflags="-s -w -X 'main.Version=${APP_VERSION}' -X 'main.BuildDate=${BUILD_TIME}'" -o /go/bin/sentry-notifier /go/src/github.com/artarts36/sentry-notifier/cmd/main.go
 
 ######################################################
 
