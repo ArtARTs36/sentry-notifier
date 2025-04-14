@@ -102,7 +102,11 @@ func (t *Telegram) Send(ctx context.Context, message contracts.Message) error {
 }
 
 func (t *Telegram) buildURL() string {
-	return fmt.Sprintf("https://%s/bot%s/sendMessage", t.cfg.Host, t.cfg.BotToken)
+	return fmt.Sprintf(
+		"https://%s/bot%s/sendMessage",
+		t.cfg.Host.Value,
+		t.cfg.BotToken.Value,
+	)
 }
 
 func (t *Telegram) getChat(ctx context.Context) error {
@@ -175,5 +179,10 @@ func (t *Telegram) mapChatError(resp *http.Response, respBody []byte) error {
 }
 
 func (t *Telegram) buildGetChatURL() string {
-	return fmt.Sprintf("https://%s/bot%s/getChat?chat_id=%s", t.cfg.Host, t.cfg.BotToken, t.cfg.ChatID)
+	return fmt.Sprintf(
+		"https://%s/bot%s/getChat?chat_id=%s",
+		t.cfg.Host.Value,
+		t.cfg.BotToken.Value,
+		t.cfg.ChatID.Value,
+	)
 }
