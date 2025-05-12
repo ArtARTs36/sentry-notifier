@@ -13,6 +13,8 @@ Configuration structure declared in [sentry-notifier-json-schema.json](./sentry-
 ```yaml
 http:
   address: :8080
+  rate_limit:
+    max: 100
   
 control:
   address: :8081
@@ -27,12 +29,15 @@ channels:
         thread_id: '$SENTRY_NOTIFIER_TELEGRAM_CHAT_THREAD_ID'
         bot_token: '$SENTRY_NOTIFIER_TELEGRAM_BOT_TOKEN'
         
-    mattermost:
-      - server: 'http//localhost:8065'
-        token: '$SENTRY_NOTIFIER_MATTERMOST_TOKEN'
+    mattermost_api:
+      - server: 'http://localhost:8065'
+        token: 'byncedkdmtbkmq4i7ossdtc6rw'
         channel:
           name: 'alerts'
-          team_name: 'My Team'
+          team_name: 'test'
+
+    mattermost_webhook:
+      - url: 'http://localhost:8065/hooks/x4c7wex9t7fpzboe4y5jxkh4ur'
 
 notify:
   strategy: async

@@ -13,7 +13,8 @@ import (
 
 type Config struct {
 	HTTP struct {
-		Addr string `yaml:"address" json:"address"`
+		Addr      string                     `yaml:"address" json:"address"`
+		RateLimit middleware.RateLimitConfig `yaml:"rate_limit" json:"rate_limit"`
 	} `yaml:"http" json:"http"`
 
 	Control struct {
@@ -54,6 +55,10 @@ func (c *Channel) Validate() error {
 }
 
 func (c *Config) Validate() error {
+	if err := c.HTTP.RateLimit.Validate(); err != nil {
+		return fmt.Errorf("rate_limit: %w", err)
+	}
+
 	for channelName, channel := range c.Channels {
 		if err := channel.Validate(); err != nil {
 			return fmt.Errorf("channel[%q]: %w", channelName, err)

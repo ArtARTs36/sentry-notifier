@@ -50,7 +50,7 @@ func New(config cfg.Config, metricsRegistry goMetrics.Registry) (*Server, notifi
 
 func (s *Server) Run() error {
 	mux := http.NewServeMux()
-	mux.Handle("/listen", s.handler)
+	mux.Handle("/", s.handler)
 
 	hServer := &http.Server{
 		Addr:        s.config.HTTP.Addr,

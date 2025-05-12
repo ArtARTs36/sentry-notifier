@@ -7,6 +7,15 @@
       "properties": {
         "address": {
           "type": "string"
+        },
+        "rate_limit": {
+          "type": "object",
+          "properties": {
+            "max": {
+              "type": "number",
+              "default": 100
+            }
+          }
         }
       },
       "required": [

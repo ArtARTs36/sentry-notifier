@@ -1,5 +1,7 @@
 http:
   address: :8088
+  rate_limit:
+    max: 100
 
 control:
   address: :8081
