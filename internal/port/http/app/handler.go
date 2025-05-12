@@ -16,7 +16,7 @@ func (s *Server) buildHandler(target http.Handler, config cfg.Config) http.Handl
 				appmw.Metrics(
 					appmw.AuthorizeRequest(
 						target,
-						config.Security,
+						config.HTTP.Security,
 					),
 				),
 			),

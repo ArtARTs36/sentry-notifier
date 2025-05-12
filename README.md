@@ -15,12 +15,11 @@ http:
   address: :8080
   rate_limit:
     max: 100
+  security:
+    client_secret: '$SENTRY_NOTIFIER_SENTRY_CLIENT_SECRET'
   
 control:
   address: :8081
-
-security:
-  client_secret: '$SENTRY_NOTIFIER_SENTRY_CLIENT_SECRET'
 
 channels:
   my_team:

@@ -15,6 +15,7 @@ type Config struct {
 	HTTP struct {
 		Addr      string                     `yaml:"address" json:"address"`
 		RateLimit middleware.RateLimitConfig `yaml:"rate_limit" json:"rate_limit"`
+		Security  middleware.AuthorizeConfig `yaml:"security" json:"security"`
 	} `yaml:"http" json:"http"`
 
 	Control struct {
@@ -24,8 +25,6 @@ type Config struct {
 	Log struct {
 		Level specw.SlogLevel `yaml:"level" json:"level"`
 	} `yaml:"log" json:"log"`
-
-	Security middleware.AuthorizeConfig `yaml:"security" json:"security"`
 
 	Channels map[string]Channel `yaml:"channels" json:"channels"`
 

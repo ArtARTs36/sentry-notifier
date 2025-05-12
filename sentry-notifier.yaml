@@ -2,6 +2,8 @@ http:
   address: :8088
   rate_limit:
     max: 100
+  security:
+    client_secret: '$SENTRY_NOTIFIER_SENTRY_CLIENT_SECRET'
 
 control:
   address: :8081
@@ -13,7 +15,7 @@ channels:
   my_team:
     mattermost_api:
       - server: 'http://localhost:8065'
-        token: '$SENTRY_NOTIFIER_MATTERMOST_TOKEN'
+        token: 'csdfdfdf'
         channel:
           name: 'alerts'
           team_name: 'test'
