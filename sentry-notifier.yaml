@@ -8,9 +8,6 @@ http:
 control:
   address: :8081
 
-security:
-  client_secret: '$SENTRY_NOTIFIER_SENTRY_CLIENT_SECRET'
-
 channels:
   my_team:
     mattermost_api:
