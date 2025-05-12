@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/artarts36/sentry-notifier/internal/handler"
 	"github.com/artarts36/sentry-notifier/internal/health"
 	"github.com/artarts36/sentry-notifier/internal/metrics"
+	"github.com/artarts36/sentry-notifier/internal/port/control/handlers"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 	"strings"
@@ -106,7 +106,7 @@ func main() {
 	metrics.NewAppInfo(metricsRegistry).SetInfo(Version, BuildTime, "telegram,mattermost")
 
 	hServer, notifier := app.New(config, metricsRegistry)
-	controlServer := registerControl(config, hServer, handler.NewTestHandler(notifier))
+	controlServer := registerControl(config, hServer, handlers.NewTestHandler(notifier))
 
 	wg := &sync.WaitGroup{}
 
@@ -183,7 +183,7 @@ func setupLogger(lvl slog.Level) {
 	slog.SetDefault(logger)
 }
 
-func registerControl(config cfg.Config, target *app.Server, testHandler *handler.TestHandler) *http.Server {
+func registerControl(config cfg.Config, target *app.Server, testHandler *handlers.TestHandler) *http.Server {
 	const readTimeout = 30 * time.Second
 
 	mux := http.NewServeMux()
