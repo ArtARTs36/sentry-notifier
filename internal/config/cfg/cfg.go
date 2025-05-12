@@ -3,12 +3,12 @@ package cfg
 import (
 	"fmt"
 	"github.com/artarts36/sentry-notifier/internal/messenger/mattermostwh"
+	"github.com/artarts36/sentry-notifier/internal/port/http/middleware"
 	"github.com/artarts36/specw"
 
 	"github.com/artarts36/sentry-notifier/internal/messenger/mattermostapi"
 	"github.com/artarts36/sentry-notifier/internal/messenger/telegram"
 	"github.com/artarts36/sentry-notifier/internal/notifier"
-	"github.com/artarts36/sentry-notifier/internal/security"
 )
 
 type Config struct {
@@ -24,7 +24,7 @@ type Config struct {
 		Level specw.SlogLevel `yaml:"level" json:"level"`
 	} `yaml:"log" json:"log"`
 
-	Security security.Config `yaml:"security" json:"security"`
+	Security middleware.AuthorizeConfig `yaml:"security" json:"security"`
 
 	Channels map[string]Channel `yaml:"channels" json:"channels"`
 

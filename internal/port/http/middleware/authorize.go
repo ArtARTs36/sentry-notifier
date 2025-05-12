@@ -1,4 +1,4 @@
-package security
+package middleware
 
 import (
 	"bytes"
@@ -11,11 +11,11 @@ import (
 	"net/http"
 )
 
-type Config struct {
+type AuthorizeConfig struct {
 	ClientToken specw.Env[string] `yaml:"client_secret" json:"client_secret"`
 }
 
-func AuthorizeRequest(next http.Handler, cfg Config) http.Handler {
+func AuthorizeRequest(next http.Handler, cfg AuthorizeConfig) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
 		next := next
 

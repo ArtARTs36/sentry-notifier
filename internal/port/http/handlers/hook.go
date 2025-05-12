@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"github.com/artarts36/sentry-notifier/internal/notifier"

@@ -8,14 +8,14 @@ import (
 	"net/http"
 
 	"github.com/artarts36/sentry-notifier/internal/config/cfg"
-	"github.com/artarts36/sentry-notifier/internal/security"
+	appmw "github.com/artarts36/sentry-notifier/internal/port/http/middleware"
 	sloghttp "github.com/samber/slog-http"
 )
 
 func (s *Server) buildHandler(target http.Handler, config cfg.Config) http.Handler {
 	return sloghttp.New(slog.Default())(
 		wrapMetricHandler(
-			security.AuthorizeRequest(
+			appmw.AuthorizeRequest(
 				target,
 				config.Security,
 			),

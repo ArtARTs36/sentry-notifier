@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 	goMetrics "github.com/artarts36/go-metrics"
-	"github.com/artarts36/sentry-notifier/internal/handler"
 	"github.com/artarts36/sentry-notifier/internal/health"
 	"github.com/artarts36/sentry-notifier/internal/messenger/contracts"
 	messengererrors "github.com/artarts36/sentry-notifier/internal/messenger/errs"
 	"github.com/artarts36/sentry-notifier/internal/metrics"
 	"github.com/artarts36/sentry-notifier/internal/notifier"
+	"github.com/artarts36/sentry-notifier/internal/port/http/handlers"
 	"log/slog"
 	"net/http"
 	"time"
@@ -43,7 +43,7 @@ func New(config cfg.Config, metricsRegistry goMetrics.Registry) (*Server, notifi
 		messengers: messengers,
 	}
 
-	s.handler = s.buildHandler(handler.NewHookHandler(notif), config)
+	s.handler = s.buildHandler(handlers.NewHookHandler(notif), config)
 
 	return s, notif
 }

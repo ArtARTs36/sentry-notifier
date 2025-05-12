@@ -14,11 +14,11 @@ import (
 
 	goMetrics "github.com/artarts36/go-metrics"
 
-	"github.com/artarts36/sentry-notifier/internal/app"
 	"github.com/artarts36/sentry-notifier/internal/config/cfg"
 	"github.com/artarts36/sentry-notifier/internal/config/injector"
 	"github.com/artarts36/sentry-notifier/internal/config/parser"
 	"github.com/artarts36/sentry-notifier/internal/config/storage"
+	"github.com/artarts36/sentry-notifier/internal/port/http/app"
 	"log/slog"
 	"os"
 	"os/signal"
