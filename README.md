@@ -42,7 +42,10 @@ notify:
   strategy: async
   on:
     event_alert:
-      - message: |
+      - when:
+          project_name:
+            equals: "front-end"
+        message: |
           🚨 Error on {{ hook.Extracted.OrganizationName }}/{{ hook.Extracted.ProjectSlug }}
 
           at {{ hook.Event.Datetime.Human() }}
