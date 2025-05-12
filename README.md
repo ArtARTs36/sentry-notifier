@@ -31,7 +31,7 @@ channels:
         
     mattermost_api:
       - server: 'http://localhost:8065'
-        token: 'byncedkdmtbkmq4i7ossdtc6rw'
+        token: '$SENTRY_NOTIFIER_MATTERMOST_TOKEN'
         channel:
           name: 'alerts'
           team_name: 'test'
